@@ -1,0 +1,1 @@
+# symfony-auth-template-mvc
