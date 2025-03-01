@@ -1,0 +1,40 @@
+<table class="row-content"
+    style="font-family: Arial; text-align:center; max-width: 600px;margin: 0 auto;border-collapse:collapse;"
+    width="100%" border="1" cellpadding="5" cellspacing="1">
+    <tr>
+        <th {{ cuerpo.color_cabecera is defined ? cuerpo.color_cabecera|raw : '' }} colspan="2">
+            {{ cuerpo.peticion_titulo|default('SOLICITUD DE FLEXIBILIDAD HORARIA NO SEMANAL') }}
+        </th>
+    </tr>
+    <tr>
+        <th>Usuario</th>
+        <td>{{ cuerpo.peticion_usuario }}</td>
+    </tr>
+    <tr>
+        <th>Fecha</th>
+        <td>{{ cuerpo.peticion_fecha|date('d-m-Y') }}
+        </td>
+    </tr>
+    <tr>
+        <th>Horas solicitadas</th>
+        <td>{{ cuerpo.peticion_horas }}</td>
+    </tr>
+
+    {% if cuerpo.peticion_motivo != '' %}
+    <tr>
+        <th>Motivo</th>
+        <td>{{ cuerpo.peticion_motivo }}</td>
+    </tr>
+    {% endif %}
+
+    {% if cuerpo.peticion_accion == 'solicitar' %}
+    <tr>
+        {% set baseUrl = 'https://intranet3.tpfingenieria.com/horas_extras/resolver/' %}
+        <td colspan="2">Haga clic <a href="{{ baseUrl ~ cuerpo.new_id ~ '?usp=' ~ cuerpo.peticion_superior }}">aquí</a> para procesar la solicitud recibida.</td>
+    </tr>
+    {% endif %}
+
+    <tr>
+        <td colspan="2">Un saludo, <br>Departamento de Recursos Humanos.</td>
+    </tr>
+</table>

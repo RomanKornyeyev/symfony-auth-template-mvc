@@ -1,0 +1,15 @@
+{# ********** FLASHES ********** #}
+<!-- ERROR FORMULARIO (Mayormente CSRF) -->
+{% if form is defined and form_errors(form) %}
+    {{ form_errors(form) }}
+{% endif %}
+
+<!-- Mensajes éxito / fallo personalizados -->
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade mb-4 alert-slide-in" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endfor %}

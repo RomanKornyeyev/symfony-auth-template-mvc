@@ -1,0 +1,21 @@
+{% if lista is defined and lista|length %}
+  <table class="list_block block-3" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation"
+    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word; color: #101112; direction: ltr; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; letter-spacing: 0px; line-height: 120%; text-align: left; mso-line-height-alt: 19.2px;">
+    <tr>
+      <td class="pad" style="padding-bottom:10px;padding-left:30px;padding-right:10px;padding-top:10px;">
+        <div style="margin-left:-20px">
+          <ul start="1" style="margin-top: 0; margin-bottom: 0; list-style-type: revert;">
+            {% for label, value in lista %}
+              <li style="Margin: 0 0 0 0;">
+                {% if mostrar_etiquetas is defined and mostrar_etiquetas %}
+                  <strong>{{ label }}:</strong>
+                {% endif %}
+                {{ value }}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </td>
+    </tr>
+  </table>
+{% endif %}

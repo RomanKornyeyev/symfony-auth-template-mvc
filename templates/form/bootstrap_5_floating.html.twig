@@ -1,0 +1,14 @@
+{% extends 'bootstrap_5_layout.html.twig' %}
+
+{# Sobrescribimos el bloque form_row para manejar form-floating solo en ciertos tipos de input #}
+{% block form_row %}
+    {% if form.vars.block_prefixes[1] in ['text', 'email', 'password', 'number'] %}
+        <div class="form-floating mb-3">
+            {{ form_widget(form, { 'attr': {'placeholder': form.vars.label} }) }}
+            {{ form_label(form) }}
+            {{ form_errors(form) }}
+        </div>
+    {% else %}
+        {{ parent() }} {# Usa el diseño estándar de Bootstrap 5 para otros campos #}
+    {% endif %}
+{% endblock %}

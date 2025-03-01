@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="d-flex justify-content-center align-items-center h-100">
+        <main class="form-wrapper">
+            <h1 class="text-center mb-3">Reenviar confirmación</h1>
+            <p class="text-center mb-3">Si no has recibido el email de confirmación o ha caducado, introduce tu email para recibir un nuevo enlace.</p>
+
+            {# FORM #}
+            <form method="post" class="p-4 p-md-5 border rounded-3 bg-body-tertiary">
+            
+                {# CSRF #}
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('resend_confirmation') }}">
+
+                {# EMAIL #}
+                <div class="form-floating mb-3">
+                    <input type="email" name="email" id="email" class="form-control" required placeholder="name@example.com" autocomplete="off">
+                    <label for="email">Email</label>
+                </div>
+
+                {# SUBMIT #}
+                <button type="submit" class="w-100 btn btn-lg btn-primary">Reenviar Confirmación</button>
+            </form>
+        </main>
+    </div>
+{% endblock %}

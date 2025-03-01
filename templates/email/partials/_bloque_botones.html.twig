@@ -1,0 +1,16 @@
+<table class="button_block" width="100%" border="0" cellpadding="20" cellspacing="0" role="presentation"
+    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; text-align: center;">
+    <tr>
+        <td>
+            <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                    {% for boton in botones %}
+                        <td style="padding-left: 10px; padding-right: 10px; text-align: center;">
+                            {% include boton.partial with boton.params %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>

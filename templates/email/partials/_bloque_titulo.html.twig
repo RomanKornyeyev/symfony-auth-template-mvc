@@ -1,0 +1,14 @@
+{% if titulo is defined and titulo|trim %}
+  <table class="heading_block block-1" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation"
+    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+    <tr>
+      <td class="pad" style="padding-left:20px;padding-right:20px;text-align:center;width:100%;">
+        <h1 style="margin: 0; color: #000; direction: ltr; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 25px; font-weight: 700; letter-spacing: normal; line-height: 150%; text-align: left; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 63px;">
+          <span class="tinyMce-placeholder" style="word-break: break-word;">
+            {{ titulo|default('EXAMPLE TITLE') }}
+          </span>
+        </h1>
+      </td>
+    </tr>
+  </table>
+{% endif %}

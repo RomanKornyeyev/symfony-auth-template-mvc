@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+
+    <div class="d-flex justify-content-center align-items-center h-100">
+        
+        <div class="form-wrapper">   
+            <h1 class="text-center mb-3">Registro</h1>     
+
+            {{ form_start(form, { 'attr': { 'class': 'p-4 p-md-5 border rounded-3 bg-body-tertiary' } }) }}
+            
+                {# CSRF #}
+                {{ form_row(form._csrf_token) }}
+
+                {# NOMBRE #}
+                <div class="form-floating mb-3">
+                    {{form_row(form.nombre) }}
+                </div>
+
+                {# EMAIL #}
+                <div class="form-floating mb-3">
+                    {{form_row(form.email) }}
+                </div>
+
+                {# PASSWORD #}
+                <div class="form-floating mb-3">
+                    {{form_row(form.password) }}
+                </div>
+
+                {# SUBMIT #}
+                <div class="mb-3">
+                    {{ form_row(form.registrarse, { 'attr': { 'class': 'w-100 btn btn-lg btn-primary' } }) }}
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+{% endblock %}
+
+
+

@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+
+{# Flash errores y/o confirmación #}
+{% if error %}
+    {% if error.messageKey == 'Debes confirmar tu email antes de iniciar sesión.' %}
+        <div class="alert alert-danger">
+            {{ error.messageKey }}
+            <a href="{{ path('app_resend_confirmation') }}">Reenviar confirmación</a>
+        </div>
+    {% else %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+{% endif %}
+
+<div class="d-flex justify-content-center align-items-center h-100">
+    <main class="form-wrapper">
+        <h1 class="text-center mb-3">Iniciar sesión</h1>
+
+        {# FORM #}
+        <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="post">
+            {# CSRF #}
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('login_authenticate') }}">
+
+            {# MAIL #}
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="username" name="_username" value="{{ last_username }}" required placeholder="name@example.com" autocomplete="off">
+                <label for="username">Email</label>
+            </div>
+
+            {# PASSWORD #}
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" name="_password" id="password" placeholder="Password" required>
+                <label for="password">Contraseña</label>
+            </div>
+
+            {# REMEMBER ME #}
+            <div class="form-check text-start my-3">
+                <input class="form-check-input" type="checkbox" id="remember_me" name="_remember_me">
+                <label class="form-check-label" for="remember_me">
+                    Recuérdame
+                </label>
+            </div>
+
+            {# SUBMIT #}
+            <button class="w-100 btn btn-lg btn-primary" type="submit">Iniciar sesión</button>
+            <hr class="my-4">
+
+            {# FORGOT PASSWORD #}
+            <small class="text-muted text-center d-block">
+                ¿No tienes cuenta? <a href="{{ path('app_register') }}">Regístrate</a>
+                <br>
+                ¿Olvidaste tu contraseña? <a href="{{ path('app_forgot_password') }}">Recuperación</a>
+            </small>
+        </form>
+    </main>
+</div>
+{% endblock %}

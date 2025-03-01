@@ -1,0 +1,37 @@
+{% extends 'email/base.html.twig' %}
+
+{% block cuerpo_email %}
+    {# Titulo #}
+    {% include 'email/partials/_bloque_titulo.html.twig' with { titulo: 'Confirmación de email' } %}
+
+    {# Texto #}
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: '<strong>' ~ nombre ~ '</strong>. Te damos la bienvenida, por favor, confirma tu email para continuar.'
+    } %}
+
+    {# Botones #}
+    {% include 'email/partials/_bloque_botones.html.twig' with {
+        botones: [
+            {
+                partial: 'email/partials/_boton_primary.html.twig',
+                params: {
+                    href: url_confirmacion_email,
+                    texto: 'Confirmar email' 
+                }
+            }
+        ]
+    } %}
+
+    {# Texto #}
+    {% include 'email/partials/_bloque_texto.html.twig' with { texto: '
+        Si no visualiza el botón directamente, por favor, copie y pegue el enlace proporcionado debajo:
+    ' } %}
+
+    {# Texto #}
+    {% include 'email/partials/_bloque_texto.html.twig' with { texto: url_confirmacion_email } %}
+
+    {# Texto #}
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: 'Si no solicitaste este registro, ignora este correo.'
+    } %}
+{% endblock %}
