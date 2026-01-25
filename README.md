@@ -9,25 +9,41 @@
     </a>
 </p>
 
-# 🛡️ Aplicación web con autenticación completa  
+# Template de autentificación y configuración de perfil para Symfony MVC 
+
+> ℹ️ Versión del proyecto:
+> - Symfony CLI: 5.16.1
+> - Symfony: 8.0.3
+> - PHP: 8.4.3
+>
+> ℹ️ REQUISITOS MÍNIMOS
+> - Symfony CLI >= 5.10
+> - Symfony >= 7.0
+> - PHP >= 8.2
+
+---
 
 Aplicación web con un **sistema de autenticación completo**, incluyendo:  
 ✅ **Inicio de sesión con "Recuérdame"**  
 ✅ **Registro con confirmación por correo (Symfony Mailer)**  
 ✅ **Recuperación y restablecimiento de contraseña**  
+⌛ **Gestión de perfil: edición de datos**  
+⌛ **Gestión de perfil: edición de email y password con confirmación por email**  
 
-Interfaz sencilla y moderna con **Bootstrap**, completamente **responsive** 📱 y con **modo claro/oscuro automático** 🌗.
+Interfaz sencilla con **Bootstrap**, 100% **responsive** y con **modo claro/oscuro automático**.
 
 ---
 
-## 🚀 Instalación y Configuración
+## Instalación y Configuración
 
-### 📌 1. Instalar dependencias
+### OPCIÓN 1: CLONAR E INSTALAR DEPENDENCIAS (RECOMENDADO)
+
+#### 1.1 Instalar dependencias
 ```bash
 composer install
 ```
 
-### ⚙️ 2. Configurar variables de entorno (credenciales)
+#### 1.2 Configurar variables de entorno (credenciales)
 Generamos un .env.local y metemos las credenciales: ``cp .env.local.example .env.local``
 ```bash
 APP_ENV=dev
@@ -39,11 +55,65 @@ MAILER_DSN=smtp://usuario:password@smtp.servidor.com:587
 APP_SECRET=tu_secreto_aqui
 ```
 
-### 🔨 3. Crear la base de datos y ejecutar migraciones
+#### 1.3 Crear la base de datos y ejecutar migraciones
 ```bash
 php bin/console doctrine:migrations:migrate
 ```
 <i>*Si no tienes schema, ejecuta ``php bin/console doctrine:database:create``</i>
+
+_
+
+### OPCIÓN 2: INICIAR UN NUEVO PROYECTO Y COPIAR ARCHIVOS NECESARIOS
+
+#### 2.1 Crear un proyecto base de Symfony MVC
+```bash
+symfony new mi_proyecto --webapp
+```
+
+#### 2.2 Instalar dependencias extra necesarias
+```bash
+composer require babdev/pagerfanta-bundle
+composer require knplabs/knp-paginator-bundle
+```
+
+#### 2.3 Copiar archivos de de configuración
+##### 2.3.1 config
+```bash
+config>packages>babdev_pagerfanta.yaml
+config>packages>knp_paginator.yaml
+config>packages>messenger.yaml
+config>packages>security.yaml # IMPORTANTE PARA AUTH PROVIDER
+config>packages>twig.yaml
+```
+
+##### 2.3.2 public
+```bash
+public>*
+```
+
+##### 2.3.3 src
+```bash
+src>* # EXCEPTO Kernel.php
+```
+
+##### 2.3.4 templates
+```bash
+templates>*
+```
+
+#### 2.4 Credenciales y migraciones
+Seguir pasos 1.2 y 1.3 para credenciales y migraciones.
+
+_
+
+> **ℹ️ Requisitos mínimos**
+> 
+> - Symfony CLI >= 5.10
+> - Symfony >= 7.0
+> - PHP >= 8.2
+> 
+> Este proyecto está construido con **Symfony CLI 5.16.1**, **Symfony 8.0.3** y **PHP 8.4.3**.
+> Versiones anteriores y posteriores pueden presentar incompatibilidades.
 
 
 ---

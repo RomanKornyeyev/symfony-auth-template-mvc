@@ -1,15 +1,194 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}IndexController{% endblock %}
+{% block title %}Controla tus Gastos con FinanzasApp
+{% endblock %}
 
 {% block content %}
-<div class="example-wrapper">
-    <h1>IndexController ✅</h1>
+	<style>
+		/* estilos en línea, juzgadme */
+		.animate-bounce {
+			animation: bounce 1.5s infinite;
+		}
+		@keyframes bounce {
+			0,
+			20%,
+			50%,
+			80%,
+			100% {
+				transform: translateY(0);
+			}
+			40% {
+				transform: translateY(8px);
+			}
+			60% {
+				transform: translateY(4px);
+			}
+		}
+	</style>
+	<div
+		class="landing-page">
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/roman/Downloads/proyectos/pelis_marvel/src/Controller/IndexController.php</code></li>
-        <li>Your template at <code>C:/Users/roman/Downloads/proyectos/pelis_marvel/templates/index/index.html.twig</code></li>
-    </ul>
-</div>
+		{# SECCIÓN 1: HERO #}
+		<section class="d-flex flex-column justify-content-center align-items-center text-center py-5" style="min-height: 83vh;">
+			<div class="container">
+				<h1 class="display-3 fw-bold mb-3">Ahorra más. Estrésate menos.</h1>
+				<p class="lead mb-4">Toma el control de tu economía personal de forma simple y visual.</p>
+				{% if is_granted('IS_AUTHENTICATED_FULLY') or is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+					<a href="#" class="btn btn-primary btn-lg">Ir a mis movimientos</a>
+				{% else %}
+					<div class="d-flex justify-content-center gap-3">
+						<a href="{{ path('app_login') }}" class="btn btn-primary btn-lg">Iniciar sesión</a>
+						<a href="{{ path('app_register') }}" class="btn btn-outline-primary btn-lg">Registrarse</a>
+					</div>
+				{% endif %}
+			</div>
+			<div class="mt-5 d-flex flex-column justify-content-center">
+				<i class="fa-solid fa-chevron-down fa-2x animate-bounce"></i>
+			</div>
+		</section>
+
+		{# SECCIÓN 2: FUNCIONALIDADES #}
+		<section class="py-5 bg-body text-body border-bottom">
+			<div class="container">
+				<h2 class="text-center mb-5">¿Qué puedes hacer con FinanceFlow?</h2>
+				<div class="row text-center">
+					<div class="col-md-4 mb-4">
+						<div class="card shadow-sm h-100">
+							<div class="card-body text-center">
+								<i class="fa-solid fa-wallet fa-3x text-primary mb-3"></i>
+								<h5 class="card-title">Registra tus movimientos</h5>
+								<p class="card-text">Anota ingresos y gastos fácilmente desde cualquier dispositivo.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 mb-4">
+						<div class="card shadow-sm h-100">
+							<div class="card-body text-center">
+								<i class="fa-solid fa-chart-pie fa-3x text-success mb-3"></i>
+								<h5 class="card-title">Visualiza con gráficos</h5>
+								<p class="card-text">Ve tus gastos e ingresos por categoría con gráficos circulares claros y dinámicos.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 mb-4">
+						<div class="card shadow-sm h-100">
+							<div class="card-body text-center">
+								<i class="fa-solid fa-calendar-days fa-3x text-warning mb-3"></i>
+								<h5 class="card-title">Filtra por fechas</h5>
+								<p class="card-text">Consulta tus finanzas mensuales, trimestrales o del periodo que tú elijas.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		{# SECCIÓN 3: LLAMADO A LA ACCIÓN #}
+		<section class="py-5 bg-body text-body border-bottom">
+			<div class="container text-center">
+				<h2 class="fw-bold mb-3">¡Transforma tu futuro financiero hoy!</h2>
+				<p class="mb-4">Únete a miles de usuarios que ya están gestionando sus finanzas de manera inteligente y eficiente.</p>
+				{% if is_granted('IS_AUTHENTICATED_FULLY') or is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+					<a href="#" class="btn btn-primary btn-lg">Ir a mis movimientos</a>
+				{% else %}
+					<a href="{{ path('app_register') }}" class="btn btn-primary btn-lg">Crear cuenta gratis</a>
+				{% endif %}
+			</div>
+		</section>
+
+		{# SECCIÓN 4: CONFIANZA/TECNOLOGÍA #}
+		<section class="py-5 bg-body text-body">
+			<div class="container">
+				<h3 class="text-center mb-4">Tecnología y confianza</h3>
+				<div class="row text-center">
+					<div class="col-md-4 mb-4">
+						<div class="card shadow-sm h-100">
+							<div class="card-body text-center">
+								<i class="fa-solid fa-lock fa-3x text-danger mb-3"></i>
+								<h5 class="card-title">Autenticación segura</h5>
+								<p class="card-text">Tokens únicos, protección CSRF y cifrado de contraseñas para tu tranquilidad.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 mb-4">
+						<div class="card shadow-sm h-100">
+							<div class="card-body text-center">
+								<i class="fa-solid fa-cloud fa-3x text-info mb-3"></i>
+								<h5 class="card-title">Disponibilidad total</h5>
+								<p class="card-text">Accede desde cualquier lugar, sin perder tus datos ni configuración.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 mb-4">
+						<div class="card shadow-sm h-100">
+							<div class="card-body text-center">
+								<i class="fa-solid fa-mobile-screen fa-3x text-success mb-3"></i>
+								<h5 class="card-title">100% Responsive</h5>
+								<p class="card-text">Diseño adaptado para móvil, tablet y escritorio.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		{# SECCIÓN 5: FAQS #}
+		<section class="py-5 bg-body text-body border-top">
+			<div class="container">
+				<h3 class="text-center mb-4">Preguntas frecuentes</h3>
+				<div class="accordion" id="faqAccordion">
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="faq1">
+							<button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse1">
+								¿FinanceFlow es gratuita?
+							</button>
+						</h2>
+						<div id="faqCollapse1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+							<div class="accordion-body fw-light">
+								Sí, puedes usar todas las funciones básicas sin coste. En el futuro podríamos ofrecer funciones premium opcionales.
+							</div>
+						</div>
+					</div>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="faq2">
+							<button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse2">
+								¿Mis datos están seguros?
+							</button>
+						</h2>
+						<div id="faqCollapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+							<div class="accordion-body fw-light">
+								Absolutamente. Usamos cifrado, tokens y protección CSRF. Solo tú accedes a tu información.
+							</div>
+						</div>
+					</div>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="faq3">
+							<button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse3">
+								¿Necesito ser experto en finanzas para usar la app?
+							</button>
+						</h2>
+						<div id="faqCollapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+							<div class="accordion-body fw-light">
+								Para nada. FinanceFlow está diseñada para cualquier persona que quiera controlar sus finanzas de forma clara y sin complicaciones.
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		{# SECCIÓN 6: LLAMADO A LA ACCIÓN #}
+		<section class="py-5 bg-body text-body border-top">
+			<div class="container text-center">
+				<h2 class="fw-bold mb-3">¡Únete hoy mismo GRATIS!</h2>
+				<p class="mb-4">Da el primer paso hacia una vida financiera más organizada y sin estrés.</p>
+				{% if is_granted('IS_AUTHENTICATED_FULLY') or is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+					<a href="#" class="btn btn-primary btn-lg">Ir a mis movimientos</a>
+				{% else %}
+					<a href="{{ path('app_register') }}" class="btn btn-primary btn-lg">Crear cuenta gratis</a>
+				{% endif %}
+			</div>
+		</section>
+
+	</div>
 {% endblock %}

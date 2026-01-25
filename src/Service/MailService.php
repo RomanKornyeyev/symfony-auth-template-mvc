@@ -22,7 +22,7 @@ class MailService
     $url = $this->router->generate('app_confirm_email', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
 
     $email = (new TemplatedEmail())
-      ->from('no.reply.seriesbuddies@gmail.com')
+      ->from('no.reply.financeflow.team@gmail.com')
       ->to($to)
       ->subject('Confirma tu cuenta')
       ->htmlTemplate('email/confirm_email.html.twig')
@@ -34,17 +34,18 @@ class MailService
     $this->mailer->send($email);
   }
 
-  public function sendResetPasswordEmail(string $to, string $token): void
+  public function sendResetPasswordEmail(string $to, string $token, string $nombre = ''): void
   {
     $url = $this->router->generate('app_reset_password', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
 
     $email = (new TemplatedEmail())
-      ->from('no.reply.seriesbuddies@gmail.com')
+      ->from('no.reply.financeflow.team@gmail.com')
       ->to($to)
       ->subject('Recuperación de contraseña')
       ->htmlTemplate('email/reset_password.html.twig')
       ->context([
-        'resetPasswordUrl' => $url
+        'resetPasswordUrl' => $url,
+        'nombre' => $nombre
       ]);
 
     $this->mailer->send($email);

@@ -1,0 +1,45 @@
+{% macro show(filtros) %}
+  {% set partes = [] %}
+
+  {% if filtros['desde']|default('') is not empty %}
+    {% set partes = partes|merge(['desde el ' ~ filtros['desde']|date('d/m/Y')]) %}
+  {% endif %}
+
+  {% if filtros['hasta']|default('') is not empty %}
+    {% set partes = partes|merge(['hasta el ' ~ filtros['hasta']|date('d/m/Y')]) %}
+  {% endif %}
+
+  {% if filtros['tipoTransaccion']|default('') is not empty %}
+    {% set partes = partes|merge(['tipo: ' ~ filtros['tipoTransaccion']|capitalize]) %}
+  {% endif %}
+
+  {% if filtros['categoria']|default('') is not empty %}
+    {% set partes = partes|merge(['categoría: ' ~ filtros['categoria']|replace({'_': ' '})|capitalize]) %}
+  {% endif %}
+
+  {% if filtros['concepto']|default('') is not empty %}
+    {% set partes = partes|merge(['concepto que contiene: "' ~ filtros['concepto'] ~ '"']) %}
+  {% endif %}
+
+  {% if filtros['descripcion']|default('') is not empty %}
+    {% set partes = partes|merge(['descripción que contiene: "' ~ filtros['descripcion'] ~ '"']) %}
+  {% endif %}
+
+  {% if filtros['importeMin']|default('') is not empty %}
+    {% set partes = partes|merge(['importe desde ' ~ filtros['importeMin'] ~ ' €']) %}
+  {% endif %}
+
+  {% if filtros['importeMax']|default('') is not empty %}
+    {% set partes = partes|merge(['hasta ' ~ filtros['importeMax'] ~ ' €']) %}
+  {% endif %}
+
+  {% if partes|length > 0 %}
+    <h5 class="text-center text-muted mt-2 mb-4">
+      {{ partes|join(', ')|raw|capitalize }}
+    </h5>
+  {% else %}
+    <h5 class="text-center text-muted mt-2 mb-4">
+      Posición global
+    </h5>
+  {% endif %}
+{% endmacro %}

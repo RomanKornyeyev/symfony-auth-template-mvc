@@ -1,0 +1,74 @@
+{% macro pieChart(id, titulo, labels, valores) %}
+  {% set total = valores | reduce((carry, val) => carry + val, 0) %}
+  {% if labels is empty or total == 0 %}
+    <div class="card h-100">
+      <div class="card-header text-center fw-bold">{{ titulo }}</div>
+      <div class="card-body d-flex align-items-center justify-content-center">
+        <div class="alert alert-info text-center mb-0 w-100">
+          No hay datos para mostrar en este gráfico.
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="card h-100">
+      <div class="card-header text-center fw-bold">{{ titulo }}</div>
+      <div class="card-body">
+        <canvas id="{{ id }}"></canvas>
+        <ul class="list-group list-group-flush small mt-3">
+          {% for i in 0..(labels|length - 1) %}
+            {% set label = labels[i] %}
+            {% set value = valores[i] %}
+            {% set porcentaje = total > 0 ? (value / total * 100) : 0 %}
+            <li class="list-group-item d-flex justify-content-between">
+              <span>{{ label }}</span>
+              <span>{{ value|number_format(2, ',', '.') }} € ({{ porcentaje|number_format(1, ',', '') }}%)</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      (function() {
+        const colores = [
+          '#4caf50', '#2196f3', '#ff9800', '#e91e63',
+          '#9c27b0', '#00bcd4', '#f44336', '#8bc34a',
+          '#607d8b', '#ffc107', '#3f51b5', '#009688'
+        ];
+
+        const ctx = document.getElementById('{{ id }}');
+        const data = {
+          labels: {{ labels|json_encode|raw }},
+          datasets: [{
+            data: {{ valores|json_encode|raw }},
+            backgroundColor: colores,
+          }]
+        };
+
+        new Chart(ctx, {
+          type: 'pie',
+          data: data,
+          options: {
+            responsive: true,
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = parseFloat(context.raw) || 0;
+                    const dataset = context.chart.data.datasets[0].data.map(v => parseFloat(v) || 0);
+                    const total = dataset.reduce((a, b) => a + b, 0);
+                    const porcentaje = total > 0
+                      ? ((value / total) * 100).toFixed(1)
+                      : '0.0';
+                    return `${label}: ${value.toLocaleString('es-ES', { minimumFractionDigits: 2 })} € (${porcentaje}%)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      })();
+    </script>
+  {% endif %}
+{% endmacro %}

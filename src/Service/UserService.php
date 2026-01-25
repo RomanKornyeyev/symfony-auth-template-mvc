@@ -88,7 +88,7 @@ class UserService
     $this->em->flush();
 
     // Enviar email con el enlace de recuperación
-    $this->mailService->sendResetPasswordEmail($user->getEmail(), $newToken->getToken());
+    $this->mailService->sendResetPasswordEmail($user->getEmail(), $newToken->getToken(), $user->getNombre());
   }
 
 }

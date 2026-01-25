@@ -1,11 +1,17 @@
-.global-container{
+html{
+  scroll-behavior: smooth;
+}
+.global-container {
   min-height: 100vh;
   min-height: 100dvh;
   display: grid;
-  grid-template-rows: 
-      auto   /*header*/
-      1fr    /*body*/
-      auto;  /*footer*/
+  grid-template-rows:
+    auto
+    /*header*/
+    1fr
+    /*body*/
+    auto;
+  /*footer*/
 }
 
 /* *************************************************** */
@@ -16,7 +22,55 @@
   vertical-align: -.125em;
   fill: currentColor;
 }
+
 /* NAVBAR */
 .bd-navbar {
   padding: .65rem 0;
+}
+
+/* aparición alert */
+.alert-slide-in {
+  animation: slide-in 0.5s forwards;
+}
+
+.alert-slide-out {
+  animation: slide-out 0.5s forwards;
+}
+
+.alert-fade-out {
+  animation: fade-out 0.5s ease forwards;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }

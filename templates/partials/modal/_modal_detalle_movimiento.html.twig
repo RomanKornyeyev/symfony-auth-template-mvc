@@ -1,0 +1,40 @@
+<div class="modal fade" id="{{ id }}" tabindex="-1" aria-labelledby="{{ ariaLabelledBy }}" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content bg-body text-body">
+			<div class="modal-header">
+				<h5 class="modal-title" id="{{ ariaLabelledBy }}">Detalle del Movimiento</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body">
+				<h4 class="fw-bold {{ movimiento.tipoTransaccion.value == 'gasto' ? 'text-danger' : 'text-success' }}">
+					{{ movimiento.tipoTransaccion.value == 'gasto' ? '' : '+' }}{{ movimiento.importe }}
+					€
+				</h4>
+				<h5 class="mb-3">{{ movimiento.concepto }}</h5>
+
+				<hr>
+
+				<div class="mb-3">
+					<strong>Fecha:</strong><br>
+					<span class="text-muted">{{ movimiento.fechaMovimiento|date('d/m/Y') }}</span>
+				</div>
+				<div class="mb-3">
+					<strong>Tipo de transacción:</strong><br>
+					<span class="text-muted">{{ movimiento.tipoTransaccion.value|capitalize }}</span>
+				</div>
+				<div class="mb-3">
+					<strong>Categoría:</strong><br>
+					<span class="text-muted">{{ movimiento.categoria.value|replace({'_': ' '})|capitalize }}</span>
+				</div>
+				<div class="mb-3">
+					<strong>Descripción:</strong><br>
+					<span class="text-muted">{{ movimiento.descripcion|default('Sin descripción') }}</span>
+				</div>
+
+				<div class="text-end">
+					<button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,10 @@
+{% macro summary(pager) %}
+  {% set data = pager.getPaginationData() %}
+  {% if pager.getTotalItemCount() > 0 %}
+    <div class="text-muted small">
+      Página {{ pager.getCurrentPageNumber() }} de {{ data.pageCount }} —
+      Mostrando {{ data.firstItemNumber }} a {{ data.lastItemNumber }}
+      de {{ pager.getTotalItemCount() }} resultados
+    </div>
+  {% endif %}
+{% endmacro %}

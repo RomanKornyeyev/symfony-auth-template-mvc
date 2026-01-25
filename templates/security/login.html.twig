@@ -5,7 +5,7 @@
 {# Flash errores y/o confirmación #}
 {% if error %}
     {% if error.messageKey == 'Debes confirmar tu email antes de iniciar sesión.' %}
-        <div class="alert alert-danger">
+        <div class="alert alert-warning">
             {{ error.messageKey }}
             <a href="{{ path('app_resend_confirmation') }}">Reenviar confirmación</a>
         </div>
@@ -45,6 +45,7 @@
 
             {# SUBMIT #}
             <button class="w-100 btn btn-lg btn-primary" type="submit">Iniciar sesión</button>
+            
             <hr class="my-4">
 
             {# FORGOT PASSWORD #}

@@ -1,0 +1,13 @@
+{% macro link(label, field, currentSort, currentDir, route, queryParams) %}
+    {% set newDir = (currentSort == field and currentDir == 'asc') ? 'desc' : 'asc' %}
+    {% set icon = '' %}
+    {% if currentSort == field %}
+      {% set icon = currentDir == 'asc' 
+        ? '<i class="fa-solid fa-arrow-up"></i>' 
+        : '<i class="fa-solid fa-arrow-down"></i>' %}
+    {% endif %}
+
+    <a href="{{ path(route, queryParams | merge({'sort': field, 'dir': newDir}))|e('html_attr') }}#totales" class="btn btn-outline-primary">
+        {{ label | raw }} {{ icon | raw }}
+    </a>
+{% endmacro %}

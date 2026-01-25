@@ -1,10 +1,22 @@
 {# ********** FLASHES ********** #}
 <!-- ERROR FORMULARIO (Mayormente CSRF) -->
-{% if form is defined and form_errors(form) %}
-    {{ form_errors(form) }}
+{#
+# Este es un error que se lanza cuando el token CSRF no es válido. En este caso, se muestra un mensaje de error específico.
+# El mensaje de error se obtiene del formulario y se muestra en una alerta de Bootstrap.
+#}
+{% if form is defined and form_errors(form) and form.vars.errors|length > 0 %}
+    <div class="alert alert-danger alert-dismissible fade mb-4 alert-slide-in" role="alert">
+        {% for error in form.vars.errors %}
+            {{ error.message }}<br>
+        {% endfor %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 {% endif %}
 
-<!-- Mensajes éxito / fallo personalizados -->
+<!-- FLASHES PERSONALIZADOS (Mensajes éxito / fallo personalizados) -->
+{#
+# Estos flashes NO son automáticos y los tenemos que definir en el controlador.
+#}
 {% for label, messages in app.flashes %}
     {% for message in messages %}
         <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade mb-4 alert-slide-in" role="alert">

@@ -1,0 +1,29 @@
+<div class="modal fade" id="{{ id }}" tabindex="-1" aria-labelledby="{{ ariaLabelledBy }}" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content bg-body text-body">
+			<div class="modal-header">
+				<h5 class="modal-title" id="{{ ariaLabelledBy }}">Confirmar eliminación</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body">
+				<p>¿Estás seguro de que deseas eliminar el movimiento
+					<strong>{{ movimiento.concepto }}</strong>
+					del día
+					<strong>{{ movimiento.fechaMovimiento|date('d/m/Y') }}</strong>?</p>
+				<p class="{{ movimiento.tipoTransaccion.value == 'gasto' ? 'text-danger' : 'text-success' }} fw-bold fs-5">
+					{{ movimiento.tipoTransaccion.value == 'gasto' ? '' : '+' }}{{ movimiento.importe }}
+					€
+				</p>
+			</div>
+			<div class="modal-footer">
+				<form id="formEliminarMovimiento{{ movimiento.id }}" method="post" action="{{ path('movimiento_eliminar', {id: movimiento.id}) }}">
+					<input type="hidden" name="_token" value="{{ csrf_token('csrf_eliminar_movimiento' ~ movimiento.id) }}">
+					<button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+					<button type="submit" class="btn btn-danger" onclick="event.preventDefault(); document.getElementById('formEliminarMovimiento{{ movimiento.id }}').submit();">
+						Eliminar
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

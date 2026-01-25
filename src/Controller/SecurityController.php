@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\Usuario;
@@ -9,7 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
@@ -17,6 +18,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 
+#[Route('/auth')]
 class SecurityController extends AbstractController
 {
     private UserService $userService;
@@ -29,6 +31,11 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        // Si el usuario ya está autenticado, redirigir a la página de inicio
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_index');
+        }
+
         // Obtener error de autenticación, si hay
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
@@ -49,12 +56,17 @@ class SecurityController extends AbstractController
     #[Route('/registro', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $em): Response
     {
+        // Si el usuario ya está autenticado, redirigir a la página de inicio
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_index');
+        }
+
         $user = new Usuario();
         $form = $this->createForm(RegisterType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            try{
+            try {
                 // Crear usuario
                 $this->userService->registerUser($user);
 
@@ -74,6 +86,11 @@ class SecurityController extends AbstractController
     #[Route('/confirmar-cuenta', name: 'app_confirm_email')]
     public function confirmEmail(Request $request, EntityManagerInterface $em, Security $security): Response
     {
+        // Si el usuario ya está autenticado, redirigir a la página de inicio
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_index');
+        }
+
         $tokenValue = $request->query->get('token');
 
         if (!$tokenValue) {
@@ -118,6 +135,11 @@ class SecurityController extends AbstractController
     #[Route('/reenviar-confirmacion', name: 'app_resend_confirmation')]
     public function resendConfirmation(Request $request, EntityManagerInterface $em, UserService $userService, CsrfTokenManagerInterface $csrfTokenManager): Response
     {
+        // Si el usuario ya está autenticado, redirigir a la página de inicio
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_index');
+        }
+
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
             $csrfToken = $request->request->get('_csrf_token');
@@ -159,6 +181,11 @@ class SecurityController extends AbstractController
     #[Route('/recuperar-contrasena', name: 'app_forgot_password')]
     public function forgotPassword(Request $request, EntityManagerInterface $em, UserService $userService, CsrfTokenManagerInterface $csrfTokenManager): Response
     {
+        // Si el usuario ya está autenticado, redirigir a la página de inicio
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_index');
+        }
+
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
             $csrfToken = $request->request->get('_csrf_token');
@@ -195,6 +222,11 @@ class SecurityController extends AbstractController
     #[Route('/restablecer-contrasena', name: 'app_reset_password')]
     public function resetPassword(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher, CsrfTokenManagerInterface $csrfTokenManager): Response
     {
+        // Si el usuario ya está autenticado, redirigir a la página de inicio
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_index');
+        }
+
         $tokenValue = $request->query->get('token');
 
         if (!$tokenValue) {
@@ -252,6 +284,4 @@ class SecurityController extends AbstractController
 
         return $this->render('security/reset_password.html.twig', ['token' => $tokenValue]);
     }
-
-
 }

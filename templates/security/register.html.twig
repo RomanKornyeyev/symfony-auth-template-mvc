@@ -31,6 +31,15 @@
                 <div class="mb-3">
                     {{ form_row(form.registrarse, { 'attr': { 'class': 'w-100 btn btn-lg btn-primary' } }) }}
                 </div>
+
+                <hr class="my-4">
+
+                {# EXTRA OPTIONS #}
+                <small class="text-muted text-center d-block">
+                    ¿Tienes cuenta? <a href="{{ path('app_login') }}">Login</a>
+                    <br>
+                    ¿Olvidaste tu contraseña? <a href="{{ path('app_forgot_password') }}">Recuperación</a>
+                </small>
             {{ form_end(form) }}
         </div>
     </div>
