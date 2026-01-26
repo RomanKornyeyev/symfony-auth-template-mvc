@@ -9,9 +9,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
-#[ORM\Table(name: "usuario")]
+#[ORM\Table(name: "user")]
 #[UniqueEntity(fields: ['email'], message: 'Este email ya está registrado.')]
-class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,7 +21,7 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "string", length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2)]
-    private ?string $nombre = null;
+    private ?string $name = null;
 
     #[Assert\NotBlank]
     #[Assert\Email]
@@ -47,14 +47,14 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    public function getNombre(): ?string
+    public function getName(): ?string
     {
-        return $this->nombre;
+        return $this->name;
     }
 
-    public function setNombre(string $nombre): self
+    public function setName(string $name): self
     {
-        $this->nombre = $nombre;
+        $this->name = $name;
         return $this;
     }
 

@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Usuario;
+use App\Entity\User;
 use App\Entity\UserToken;
 use App\Form\RegisterType;
 use App\Service\UserService;
@@ -31,7 +31,7 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // Si el usuario ya está autenticado, redirigir a la página de inicio
+        // Si el user ya está autenticado, redirigir a la página de inicio
         if ($this->getUser()) {
             return $this->redirectToRoute('app_index');
         }
@@ -61,7 +61,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_index');
         }
 
-        $user = new Usuario();
+        $user = new User();
         $form = $this->createForm(RegisterType::class, $user);
         $form->handleRequest($request);
 
@@ -156,7 +156,7 @@ class SecurityController extends AbstractController
                 return $this->redirectToRoute('app_resend_confirmation');
             }
 
-            $user = $em->getRepository(Usuario::class)->findOneBy(['email' => $email]);
+            $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
 
             if (!$user) {
                 $this->addFlash('danger', 'No hay ninguna cuenta con este email.');
@@ -202,7 +202,7 @@ class SecurityController extends AbstractController
                 return $this->redirectToRoute('app_forgot_password');
             }
 
-            $user = $em->getRepository(Usuario::class)->findOneBy(['email' => $email]);
+            $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
 
             if (!$user) {
                 $this->addFlash('danger', 'Si el email existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña.');

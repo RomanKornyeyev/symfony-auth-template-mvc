@@ -8,7 +8,7 @@ security:
         # users_in_memory: { memory: null }
         app_user_provider:
             entity:
-                class: App\Entity\Usuario
+                class: App\Entity\User
                 property: email # Usa email para la autenticación
 
     firewalls:
@@ -32,7 +32,7 @@ security:
                 secret: "%kernel.secret%"
                 lifetime: 604800 # 7 días
                 path: / # Aplica a toda la web
-                always_remember_me: false # Solo si el usuario lo marca
+                always_remember_me: false # Solo si el user lo marca
 
             # Activate different ways to authenticate:
             # https://symfony.com/doc/current/security.html#the-firewall

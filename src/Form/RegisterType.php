@@ -1,7 +1,7 @@
 <?php
 namespace App\Form;
 
-use App\Entity\Usuario;
+use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -15,7 +15,7 @@ class RegisterType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nombre', TextType::class, [
+            ->add('name', TextType::class, [
                 'label' => 'Nombre',
                 'attr' => ['class' => 'form-control'],
             ])
@@ -36,9 +36,9 @@ class RegisterType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Usuario::class,
+            'data_class' => User::class,
             'csrf_protection' => true, // Activar protección CSRF
-            'csrf_field_name' => '_csrf_token', // Nombre del campo oculto
+            'csrf_field_name' => '_csrf_token', // Name del campo oculto
             'csrf_token_id'   => 'register', // Identificador único del token
         ]);
     }

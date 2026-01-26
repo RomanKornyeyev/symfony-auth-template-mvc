@@ -13,9 +13,9 @@ class UserToken
     #[ORM\Column(type: "integer")]
     private int $id;
 
-    #[ORM\ManyToOne(targetEntity: Usuario::class)]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
-    private Usuario $user;
+    private User $user;
 
     #[ORM\Column(type: "string", unique: true)]
     #[Assert\NotBlank]
@@ -35,7 +35,7 @@ class UserToken
     #[ORM\Column(type: "boolean")]
     private bool $used = false;
 
-    public function __construct(Usuario $user, string $type = "registration")
+    public function __construct(User $user, string $type = "registration")
     {
         $this->user = $user;
         $this->type = $type;
@@ -59,12 +59,12 @@ class UserToken
         return $this->id;
     }
 
-    public function getUser(): Usuario
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(Usuario $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
         return $this;

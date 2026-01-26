@@ -1,7 +1,7 @@
 <?php
 namespace App\Service;
 
-use App\Entity\Usuario;
+use App\Entity\User;
 use App\Entity\UserToken;
 use App\Service\MailService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,7 +20,7 @@ class UserService
       $this->passwordHasher = $passwordHasher;
   }
 
-  public function registerUser(Usuario $user): void
+  public function registerUser(User $user): void
   {
     // Hashear la contraseña
     $hashedPassword = $this->passwordHasher->hashPassword($user, $user->getPassword());
@@ -34,16 +34,16 @@ class UserService
       $token = new UserToken($user);
     } while ($this->em->getRepository(UserToken::class)->findOneBy(['token' => $token->getToken()]));
 
-    // Persistir usuario y token en la BD
+    // Persistir User y token en la BD
     $this->em->persist($user);
     $this->em->persist($token);
     $this->em->flush();
 
     // Enviar email de confirmación
-    $this->mailService->sendConfirmationEmail($user->getEmail(), $token->getToken(), $user->getNombre());
+    $this->mailService->sendConfirmationEmail($user->getEmail(), $token->getToken(), $user->getName());
   }
 
-  public function generateNewVerificationToken(Usuario $user): void
+  public function generateNewVerificationToken(User $user): void
   {
     // Eliminar tokens antiguos si existen
     $existingToken = $this->em->getRepository(UserToken::class)->findOneBy([
@@ -64,10 +64,10 @@ class UserService
     $this->em->flush();
 
     // Enviar email con el nuevo token
-    $this->mailService->sendConfirmationEmail($user->getEmail(), $newToken->getToken(), $user->getNombre());
+    $this->mailService->sendConfirmationEmail($user->getEmail(), $newToken->getToken(), $user->getName());
   }
 
-  public function generateResetPasswordToken(Usuario $user): void
+  public function generateResetPasswordToken(User $user): void
   {
     // Eliminar tokens antiguos
     $existingToken = $this->em->getRepository(UserToken::class)->findOneBy([
@@ -88,7 +88,7 @@ class UserService
     $this->em->flush();
 
     // Enviar email con el enlace de recuperación
-    $this->mailService->sendResetPasswordEmail($user->getEmail(), $newToken->getToken(), $user->getNombre());
+    $this->mailService->sendResetPasswordEmail($user->getEmail(), $newToken->getToken(), $user->getName());
   }
 
 }

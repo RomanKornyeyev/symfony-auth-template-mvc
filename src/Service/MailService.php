@@ -17,7 +17,7 @@ class MailService
     $this->router = $router;
   }
 
-  public function sendConfirmationEmail(string $to, string $token, string $nombre = ''): void
+  public function sendConfirmationEmail(string $to, string $token, string $name = ''): void
   {
     $url = $this->router->generate('app_confirm_email', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
 
@@ -28,13 +28,13 @@ class MailService
       ->htmlTemplate('email/confirm_email.html.twig')
       ->context([
         'url_confirmacion_email' => $url,
-        'nombre' => $nombre
+        'name' => $name
       ]);
 
     $this->mailer->send($email);
   }
 
-  public function sendResetPasswordEmail(string $to, string $token, string $nombre = ''): void
+  public function sendResetPasswordEmail(string $to, string $token, string $name = ''): void
   {
     $url = $this->router->generate('app_reset_password', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
 
@@ -45,7 +45,7 @@ class MailService
       ->htmlTemplate('email/reset_password.html.twig')
       ->context([
         'resetPasswordUrl' => $url,
-        'nombre' => $nombre
+        'name' => $name
       ]);
 
     $this->mailer->send($email);

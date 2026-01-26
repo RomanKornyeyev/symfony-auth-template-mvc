@@ -42,10 +42,10 @@
 
 					<ul class="navbar-nav flex-row flex-wrap ms-md-auto">
 						{% if is_granted('IS_AUTHENTICATED_FULLY') or is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-							{# Si el usuario está autenticado, mostramos su nombre y un enlace a Logout #}
+							{# Si el usuario está autenticado, mostramos su name y un enlace a Logout #}
 							<li class="nav-item">
 								<span class="navbar-text d-inline-block me-3">Hola,
-									{{ app.user.nombre }}</span>
+									{{ app.user.name }}</span>
 							</li>
 							<li class="nav-item col-6 col-lg-auto">
 								<a class="btn btn-outline-primary" href="{{ path('app_logout') }}">Logout</a>
