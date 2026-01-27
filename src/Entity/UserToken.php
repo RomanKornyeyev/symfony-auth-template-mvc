@@ -3,11 +3,15 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Traits\TimestampableEntity;
 
 #[ORM\Entity]
 #[ORM\Table(name: "user_token")]
+#[ORM\HasLifecycleCallbacks]
 class UserToken
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
@@ -29,9 +33,6 @@ class UserToken
     #[Assert\NotBlank]
     private \DateTime $expiresAt;
 
-    #[ORM\Column(type: "datetime")]
-    private \DateTime $createdAt;
-
     #[ORM\Column(type: "boolean")]
     private bool $used = false;
 
@@ -40,7 +41,6 @@ class UserToken
         $this->user = $user;
         $this->type = $type;
         $this->token = bin2hex(random_bytes(32)); // Genera un token aleatorio
-        $this->createdAt = new \DateTime();
         $this->expiresAt = (new \DateTime())->modify('+24 hours');
     }
 
@@ -101,11 +101,6 @@ class UserToken
     {
         $this->expiresAt = $expiresAt;
         return $this;
-    }
-
-    public function getCreatedAt(): \DateTime
-    {
-        return $this->createdAt;
     }
 
     public function isUsed(): bool
