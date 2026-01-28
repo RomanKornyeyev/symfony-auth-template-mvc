@@ -182,9 +182,9 @@ class SecurityController extends AbstractController
     public function forgotPassword(Request $request, EntityManagerInterface $em, UserService $userService, CsrfTokenManagerInterface $csrfTokenManager): Response
     {
         // Si el usuario ya está autenticado, redirigir a la página de inicio
-        if ($this->getUser()) {
-            return $this->redirectToRoute('app_index');
-        }
+        // if ($this->getUser()) {
+        //     return $this->redirectToRoute('app_index');
+        // }
 
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');

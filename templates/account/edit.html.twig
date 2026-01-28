@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar cuenta
+{% endblock %}
+
+{% block content %}
+	<div class="d-flex justify-content-center align-items-center h-100">
+		<div class="form-wrapper">
+			<h1 class="text-center mb-3">Editar perfil</h1>
+			{{ form_start(form, { 'attr': { 'class': 'p-4 p-md-5 border rounded-3 bg-body-tertiary' } }) }}
+                {# NAME #}
+                <div class="form-floating mb-3">
+                    {{form_row(form.name) }}
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a href="{{ path('app_account_index') }}" class="btn btn-outline-primary">Cancelar</a>
+                </div>
+			{{ form_end(form) }}
+		</div>
+	</div>
+{% endblock %}

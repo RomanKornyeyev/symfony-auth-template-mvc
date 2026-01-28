@@ -1,0 +1,131 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mi cuenta
+{% endblock %}
+
+{% block content %}
+	<div class="container py-4">
+
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div>
+				<h1 class="h3 mb-1">Mi cuenta</h1>
+				<p class="text-muted mb-0">Gestiona tus datos, seguridad y correo electrónico.</p>
+			</div>
+		</div>
+
+		{# Estado de cuenta / avisos #}
+		{% if account.pendingEmail %}
+			<div class="alert alert-warning d-flex justify-content-between align-items-center" role="alert">
+				<div>
+					<strong>Email pendiente de confirmación:</strong>
+					{{ account.pendingEmail }}
+					<div class="small text-muted">Revisa tu bandeja de entrada para confirmar el cambio.</div>
+				</div>
+				<a class="btn btn-outline-primary btn-sm" href="{{ path('app_account_index') ~ 'email' }}">
+					Ver cambio de email
+				</a>
+			</div>
+		{% endif %}
+
+		<div
+			class="row g-3">
+
+			{# 1) Perfil #}
+			<div class="col-12 col-lg-6">
+				<div class="card shadow-sm h-100 bg-body-tertiary">
+					<div class="card-body">
+						<h2 class="h4 mb-3">Perfil</h2>
+
+						<dl class="row mb-0">
+							<dt class="col-sm-4 text-muted">Nombre</dt>
+							<dd class="col-sm-8 mb-2">
+								{% if account.name %}
+									{{ account.name }}
+								{% else %}
+									<span class="text-muted">No definido</span>
+								{% endif %}
+							</dd>
+							<dt>&nbsp;</dt>
+							<dt class="col-sm-4 small text-muted">Creado el</dt>
+							<dd class="col-sm-8 mb-2 small text-secondary">
+								{% if account.createdAt %}
+									{{ account.createdAt|date('d/m/Y H:i') }}
+								{% else %}
+									<span class="text-muted">—</span>
+								{% endif %}
+							</dd>
+							<dt class="col-sm-4 small text-muted">Última modificación</dt>
+							<dd class="col-sm-8 mb-0 small text-secondary">
+								{% if account.modifiedAt %}
+									{{ account.modifiedAt|date('d/m/Y H:i') }}
+								{% else %}
+									<span class="text-muted">—</span>
+								{% endif %}
+							</dd>
+						</dl>
+					</div>
+
+					<div class="card-footer bg-transparent d-flex justify-content-end">
+						<a class="btn btn-primary" href="{{ path('app_account_edit') }}">
+							Editar perfil
+						</a>
+					</div>
+				</div>
+			</div>
+
+			{# 2) Seguridad #}
+			<div class="col-12 col-lg-6">
+				<div class="card shadow-sm h-100 bg-body-tertiary">
+					<div class="card-body">
+						<h2 class="h4 mb-3">Seguridad</h2>
+						<p class="text-muted mb-0">
+							Cambia tu contraseña. Te pediremos la contraseña actual para confirmar.
+						</p>
+					</div>
+
+					<div class="card-footer bg-transparent d-flex justify-content-end">
+						<a class="btn btn-outline-primary" href="{{ path('app_account_index') ~ 'seguridad/contrasena' }}">
+							Cambiar contraseña
+						</a>
+					</div>
+				</div>
+			</div>
+
+			{# 3) Email #}
+			<div class="col-12">
+				<div class="card shadow-sm bg-body-tertiary">
+					<div class="card-body">
+						<div class="d-flex justify-content-between align-items-start">
+							<div>
+								<h2 class="h4 mb-3">
+									Correo electrónico
+								</h2>
+								<p class="mt-2">
+									{% if account.email %}
+										{{ account.email }}
+									{% else %}
+										<span class="text-muted">No definido</span>
+									{% endif %}
+
+									{% if account.emailVerified is same as(true) %}
+										<span class="badge text-bg-success">Verificado</span>
+									{% elseif account.emailVerified is same as(false) %}
+										<span class="badge text-bg-warning">No verificado</span>
+									{% else %}
+										<span class="badge text-bg-secondary">Estado desconocido</span>
+									{% endif %}
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="card-footer bg-transparent d-flex justify-content-end">
+						<a class="btn btn-outline-primary" href="{{ path('app_account_index') ~ 'email' }}">
+							Cambiar y verificar email
+						</a>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+{% endblock %}
