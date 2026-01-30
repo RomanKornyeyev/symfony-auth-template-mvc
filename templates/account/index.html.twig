@@ -80,11 +80,13 @@
 						<h2 class="h4 mb-3">Seguridad</h2>
 						<p class="text-muted mb-0">
 							Cambia tu contraseña. Te pediremos la contraseña actual para confirmar.
+							<br>
+							Todas las sesiones activas se cerrarán al cambiar la contraseña.
 						</p>
 					</div>
 
 					<div class="card-footer bg-transparent d-flex justify-content-end">
-						<a class="btn btn-outline-primary" href="{{ path('app_account_index') ~ 'seguridad/contrasena' }}">
+						<a class="btn btn-outline-primary" href="{{ path('app_account_password') }}">
 							Cambiar contraseña
 						</a>
 					</div>

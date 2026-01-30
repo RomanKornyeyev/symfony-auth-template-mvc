@@ -8,6 +8,12 @@ framework:
     #esi: true
     #fragments: true
 
+    rate_limiter:
+        change_password:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '3 minutes'
+
 when@test:
     framework:
         test: true

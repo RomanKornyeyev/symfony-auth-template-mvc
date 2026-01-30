@@ -50,4 +50,21 @@ class MailService
 
     $this->mailer->send($email);
   }
+
+  public function sendPasswordChangedEmail(string $to, string $name = ''): void
+  {
+    $url = $this->router->generate('app_forgot_password', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+    $email = (new TemplatedEmail())
+      ->from('no.reply.financeflow.team@gmail.com')
+      ->to($to)
+      ->subject('Contraseña modificada')
+      ->htmlTemplate('email/password_changed.html.twig')
+      ->context([
+        'resetPasswordUrl' => $url,
+        'name' => $name
+      ]);
+
+    $this->mailer->send($email);
+  }
 }

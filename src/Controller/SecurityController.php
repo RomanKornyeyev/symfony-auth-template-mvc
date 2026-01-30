@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\UserToken;
 use App\Form\RegisterType;
+use App\Form\ResetPasswordType;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -246,34 +247,24 @@ class SecurityController extends AbstractController
 
         $user = $token->getUser();
 
-        // Procesar el formulario de reseteo de contraseña
-        if ($request->isMethod('POST')) {
-            $csrfToken = $request->request->get('_csrf_token');
+        $form = $this->createForm(ResetPasswordType::class, null, [
+            'csrf_token_id' => 'account_change_password',
+        ]);
 
-            // Validar CSRF
-            if (!$csrfTokenManager->isTokenValid(new CsrfToken('reset_password', $csrfToken))) {
-                // throw $this->createAccessDeniedException('CSRF token inválido.'); // es más estricto, pero menos amigable que un flash
-                $this->addFlash('danger', 'Token CSRF inválido.');
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $plainNew = (string) $form->get('newPassword')->getData();
+
+            // Evitar reutilizar la misma contraseña (comparando contra el hash actual)
+            if ($passwordHasher->isPasswordValid($user, $plainNew)) {
+                $this->addFlash('danger', 'La nueva contraseña no puede ser igual a la actual.');
                 return $this->redirectToRoute('app_reset_password', ['token' => $tokenValue]);
             }
 
-            $newPassword = $request->request->get('password');
-            $confirmPassword = $request->request->get('confirm_password');
-
-            if (!$newPassword || strlen($newPassword) < 6) {
-                $this->addFlash('danger', 'La contraseña debe tener al menos 6 caracteres.');
-                return $this->redirectToRoute('app_reset_password', ['token' => $tokenValue]);
-            }
-
-            if ($newPassword !== $confirmPassword) {
-                $this->addFlash('danger', 'Las contraseñas no coinciden.');
-                return $this->redirectToRoute('app_reset_password', ['token' => $tokenValue]);
-            }
-
-            // Hashear la nueva contraseña y actualizar en la BD
-            $hashedPassword = $passwordHasher->hashPassword($user, $newPassword);
-            $user->setPassword($hashedPassword);
-
+            // actualizar la contraseña y mandar mail aviso
+            $this->userService->changePassword($user, $plainNew);
+            
             // Marcar el token como usado y guardar cambios
             $token->markAsUsed();
             $em->flush();
@@ -282,6 +273,9 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        return $this->render('security/reset_password.html.twig', ['token' => $tokenValue]);
+        return $this->render('security/reset_password.html.twig', [
+            'token' => $tokenValue,
+            'form' => $form->createView()
+        ]);
     }
 }

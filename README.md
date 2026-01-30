@@ -23,14 +23,20 @@
 
 ---
 
-Aplicación web con un **sistema de autenticación completo**, incluyendo:  
-✅ **Inicio de sesión con "Recuérdame"**  
-✅ **Registro con confirmación por correo (Symfony Mailer)**  
-✅ **Recuperación y restablecimiento de contraseña**  
-⌛ **Gestión de perfil: edición de datos**  
-⌛ **Gestión de perfil: edición de email y password con confirmación por email**  
+Aplicación web con un **sistema de autenticación completo**, incluyendo: 
 
-Interfaz sencilla con **Bootstrap**, 100% **responsive** y con **modo claro/oscuro automático**.
+##### AUTH
+✅ **Inicio de sesión con "Recuérdame"**  
+✅ **Registro con confirmación por email**  
+✅ **Recuperación y restablecimiento de contraseña**  
+
+##### GESTIÓN DE PERFIL (DASHBOARD)
+✅ **edición de datos**  
+✅ **edición de password con throttling y confirmación por email**  
+⌛ **edición de email con confirmación por email**  
+
+##### INTERFAZ
+✅ Interfaz sencilla con **Bootstrap**, 100% **responsive** y con **modo claro/oscuro automático**.
 
 ---
 
@@ -74,6 +80,7 @@ symfony new mi_proyecto --webapp
 ```bash
 composer require babdev/pagerfanta-bundle
 composer require knplabs/knp-paginator-bundle
+composer require symfony/rate-limiter
 ```
 
 #### 2.3 Copiar archivos de de configuración
@@ -118,8 +125,8 @@ _
 
 ---
 
-## 📜 Licencia
+## Licencia
 Este proyecto está licenciado bajo la **MIT License**, lo que significa que puedes usar, modificar y distribuir el código libremente, incluso para proyectos comerciales, siempre que incluyas la atribución original.  
 
 Puedes leer más sobre esta licencia en:  
-🔗 [Licencia MIT - Open Source Initiative](https://opensource.org/licenses/MIT)
+[Licencia MIT - Open Source Initiative](https://opensource.org/licenses/MIT)

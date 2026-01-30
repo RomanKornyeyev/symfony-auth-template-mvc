@@ -15,9 +15,9 @@ class UserService
 
   public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher, MailService $mailService)
   {
-      $this->em = $em;
-      $this->mailService = $mailService;
-      $this->passwordHasher = $passwordHasher;
+    $this->em = $em;
+    $this->mailService = $mailService;
+    $this->passwordHasher = $passwordHasher;
   }
 
   public function registerUser(User $user): void
@@ -89,6 +89,29 @@ class UserService
 
     // Enviar email con el enlace de recuperación
     $this->mailService->sendResetPasswordEmail($user->getEmail(), $newToken->getToken(), $user->getName());
+  }
+
+  public function changePassword(User $user, string $plainNewPassword): void
+  {
+    // Hashear y guardar nueva contraseña
+    $hashedPassword = $this->passwordHasher->hashPassword($user, $plainNewPassword);
+    $user->setPassword($hashedPassword);
+
+    // Invalidar tokens de reset pendientes (no usados)
+    $tokens = $this->em->getRepository(UserToken::class)->findBy([
+      'user' => $user,
+      'type' => 'password_reset',
+      'used' => false,
+    ]);
+
+    foreach ($tokens as $token) {
+      $this->em->remove($token);
+    }
+
+    $this->em->flush();
+
+    // Notificación por email (añade el método en MailService)
+    $this->mailService->sendPasswordChangedEmail($user->getEmail(), $user->getName());
   }
 
 }
