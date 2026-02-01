@@ -48,7 +48,7 @@ class UserService
     // Eliminar tokens antiguos si existen
     $existingToken = $this->em->getRepository(UserToken::class)->findOneBy([
       'user' => $user,
-      'type' => 'registration',
+      'type' => UserToken::TYPE_REGISTRATION,
       'used' => false
     ]);
 
@@ -57,7 +57,7 @@ class UserService
     }
 
     // Crear nuevo token
-    $newToken = new UserToken($user, 'registration');
+    $newToken = new UserToken($user, UserToken::TYPE_REGISTRATION);
 
     // Guardar en la BD
     $this->em->persist($newToken);
@@ -72,7 +72,7 @@ class UserService
     // Eliminar tokens antiguos
     $existingToken = $this->em->getRepository(UserToken::class)->findOneBy([
       'user' => $user,
-      'type' => 'password_reset',
+      'type' => UserToken::TYPE_PASSWORD_RESET,
       'used' => false
     ]);
 
@@ -81,7 +81,7 @@ class UserService
     }
 
     // Crear nuevo token
-    $newToken = new UserToken($user, 'password_reset');
+    $newToken = new UserToken($user, UserToken::TYPE_PASSWORD_RESET);
 
     // Guardar en la BD
     $this->em->persist($newToken);
@@ -100,7 +100,7 @@ class UserService
     // Invalidar tokens de reset pendientes (no usados)
     $tokens = $this->em->getRepository(UserToken::class)->findBy([
       'user' => $user,
-      'type' => 'password_reset',
+      'type' => UserToken::TYPE_PASSWORD_RESET,
       'used' => false,
     ]);
 

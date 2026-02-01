@@ -1,0 +1,31 @@
+{% extends 'email/base.html.twig' %}
+
+{% block cuerpo_email %}
+    {% include 'email/partials/_bloque_titulo.html.twig' with { titulo: 'Cambio de correo cancelado' } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: 'Hola <strong>' ~ name ~ '</strong>, se ha cancelado el cambio de correo que estaba pendiente.'
+    } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: 'El correo que se intentaba establecer era: <strong>' ~ pendingEmail ~ '</strong>.'
+    } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: 'Si no has sido tú, te recomendamos solicitar un reestablecimiento de contraseña:'
+    } %}
+
+    {% include 'email/partials/_bloque_botones.html.twig' with {
+        botones: [
+            {
+                partial: 'email/partials/_boton_primary.html.twig',
+                params: {
+                    href: resetPasswordUrl,
+                    texto: 'Solicitar reestablecimiento de contraseña',
+                }
+            }
+        ]
+    } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with { texto: resetPasswordUrl } %}
+{% endblock %}

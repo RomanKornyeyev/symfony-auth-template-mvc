@@ -28,9 +28,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $name = null;
 
     #[Assert\NotBlank]
-    #[Assert\Email]
+    #[Assert\Email(message: 'El correo electrónico no es válido.')]
     #[ORM\Column(type: "string", length: 180, unique: true)]
     private ?string $email = null;
+
+    #[ORM\Column(length: 180, nullable: true)]
+    #[Assert\Email(message: 'El correo electrónico no es válido.')]
+    private ?string $pendingEmail = null;
 
     #[ORM\Column(type: "json")]
     private array $roles = [];
@@ -108,6 +112,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $status): void
     {
         $this->isVerified = $status;
+    }
+
+    public function getPendingEmail(): ?string
+    {
+        return $this->pendingEmail;
+    }
+
+    public function setPendingEmail(?string $pendingEmail): self
+    {
+        $this->pendingEmail = $pendingEmail;
+        return $this;
+    }
+
+    public function hasPendingEmailChange(): bool
+    {
+        return $this->pendingEmail !== null;
     }
 
     public function eraseCredentials(): void

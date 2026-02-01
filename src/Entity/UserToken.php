@@ -10,6 +10,10 @@ use App\Entity\Traits\TimestampableEntity;
 #[ORM\HasLifecycleCallbacks]
 class UserToken
 {
+    public const TYPE_REGISTRATION = 'registration';
+    public const TYPE_PASSWORD_RESET = 'password_reset';
+    public const TYPE_EMAIL_CHANGE = 'email_change';
+
     use TimestampableEntity;
 
     #[ORM\Id]
@@ -26,7 +30,7 @@ class UserToken
     private string $token;
 
     #[ORM\Column(type: "string")]
-    #[Assert\Choice(["registration", "password_reset"])]
+    #[Assert\Choice([self::TYPE_REGISTRATION, self::TYPE_PASSWORD_RESET, self::TYPE_EMAIL_CHANGE])]
     private string $type;
 
     #[ORM\Column(type: "datetime")]
@@ -36,7 +40,7 @@ class UserToken
     #[ORM\Column(type: "boolean")]
     private bool $used = false;
 
-    public function __construct(User $user, string $type = "registration")
+    public function __construct(User $user, string $type = self::TYPE_REGISTRATION)
     {
         $this->user = $user;
         $this->type = $type;

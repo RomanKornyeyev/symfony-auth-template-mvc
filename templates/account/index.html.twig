@@ -14,16 +14,16 @@
 		</div>
 
 		{# Estado de cuenta / avisos #}
-		{% if account.pendingEmail %}
-			<div class="alert alert-warning d-flex justify-content-between align-items-center" role="alert">
+		{% if account.hasPendingEmail %}
+			<div class="alert alert-info d-flex justify-content-between align-items-center" role="alert">
 				<div>
-					<strong>Email pendiente de confirmación:</strong>
-					{{ account.pendingEmail }}
-					<div class="small text-muted">Revisa tu bandeja de entrada para confirmar el cambio.</div>
+					<strong>Cambio de email en curso.</strong>
+					<div class="small text-muted">Nuevo email pendiente de confirmación: {{ account.pendingEmail }}.</div>
+					<div class="small text-muted">Revisa tu bandeja de entrada para confirmar el cambio. Ve a la sección de email para ver más opciones.</div>
 				</div>
-				<a class="btn btn-outline-primary btn-sm" href="{{ path('app_account_index') ~ 'email' }}">
+				{# <a class="btn btn-outline-primary btn-sm" href="{{ path('app_account_email') }}">
 					Ver cambio de email
-				</a>
+				</a> #}
 			</div>
 		{% endif %}
 
@@ -117,13 +117,37 @@
 										<span class="badge text-bg-secondary">Estado desconocido</span>
 									{% endif %}
 								</p>
+								{% if account.hasPendingEmail %}
+									{# <div class="mb-2 text-center"> <hr class="w-75 d-inline-block"></div> #}
+									<div class="alert alert-info" role="alert">
+										<p class="mt-2"><strong><i class="fa-solid fa-circle-info text-info"></i> Cambio de email en curso.</strong></p>
+										<p class="mt-2">{{ account.email }} -> {{ account.pendingEmail }}</p>		
+										{{ include('account/partials/_pending_email_timeline.html.twig') }}
+									</div>
+								{% endif %}
 							</div>
 						</div>
 					</div>
 					<div class="card-footer bg-transparent d-flex justify-content-end">
-						<a class="btn btn-outline-primary" href="{{ path('app_account_index') ~ 'email' }}">
-							Cambiar y verificar email
-						</a>
+						{% if account.hasPendingEmail %}
+							<a class="btn btn-outline-primary me-2" href="{{ path('app_account_email') }}">
+								Gestionar
+							</a>
+
+							{# <form method="post" action="{{ path('app_account_email_resend') }}" class="me-2">
+								<input type="hidden" name="_token" value="{{ csrf_token('account_email_resend') }}">
+								<button class="btn btn-outline-primary" type="submit">Reenviar verificación</button>
+							</form>
+
+							<form method="post" action="{{ path('app_account_email_cancel') }}">
+								<input type="hidden" name="_token" value="{{ csrf_token('account_email_cancel') }}">
+								<button class="btn btn-outline-danger" type="submit">Cancelar cambio</button>
+							</form> #}
+						{% else %}
+							<a class="btn btn-outline-primary" href="{{ path('app_account_email') }}">
+								Cambiar y verificar email
+							</a>
+						{% endif %}
 					</div>
 				</div>
 			</div>

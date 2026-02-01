@@ -235,7 +235,7 @@ class SecurityController extends AbstractController
         }
 
         // Buscar el token en la base de datos
-        $token = $em->getRepository(UserToken::class)->findOneBy(['token' => $tokenValue, 'type' => 'password_reset', 'used' => false]);
+        $token = $em->getRepository(UserToken::class)->findOneBy(['token' => $tokenValue, 'type' => UserToken::TYPE_PASSWORD_RESET, 'used' => false]);
 
         if (!$token) {
             throw $this->createNotFoundException('Token inválido o ya utilizado.');

@@ -1,0 +1,31 @@
+{% extends 'email/base.html.twig' %}
+
+{% block cuerpo_email %}
+    {% include 'email/partials/_bloque_titulo.html.twig' with { titulo: 'Correo actualizado' } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: 'Hola <strong>' ~ name ~ '</strong>, tu correo ha sido actualizado correctamente.'
+    } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: '<strong>Anterior:</strong> ' ~ oldEmail ~ '<br><strong>Nuevo:</strong> ' ~ newEmail
+    } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: 'Si no has sido tú, te recomendamos solicitar un reestablecimiento de contraseña:'
+    } %}
+
+    {% include 'email/partials/_bloque_botones.html.twig' with {
+        botones: [
+            {
+                partial: 'email/partials/_boton_primary.html.twig',
+                params: {
+                    href: resetPasswordUrl,
+                    texto: 'Solicitar reestablecimiento de contraseña',
+                }
+            }
+        ]
+    } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with { texto: resetPasswordUrl } %}
+{% endblock %}

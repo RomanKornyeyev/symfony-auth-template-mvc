@@ -2,27 +2,43 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Service\UserService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+// Symfony
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Form\ProfileType;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Form\ChangePasswordType;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
-use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
+
+// Entities, repositories, forms
+use App\Entity\User;
+use App\Entity\UserToken;
+use App\Form\ProfileType;
+use App\Form\ChangeEmailType;
+use App\Form\ChangePasswordType;
+use App\Repository\UserTokenRepository;
+
+// Services
+use App\Service\UserService;
+use App\Service\AccountService;
+use Doctrine\ORM\EntityManagerInterface;
 
 #[Route('/cuenta')]
 class AccountController extends AbstractController
 {
     private UserService $userService;
+    private AccountService $accountService;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, AccountService $accountService)
     {
         $this->userService = $userService;
+        $this->accountService = $accountService;
     }
 
     #[Route('/', name: 'app_account_index')]
@@ -40,7 +56,8 @@ class AccountController extends AbstractController
         $name = $user->getName();
         $email = $user->getEmail();
         $emailVerified = $user->isVerified();
-        $pendingEmail = $user->isVerified();
+        $hasPendingEmail = $user->hasPendingEmailChange();
+        $pendingEmail = $user->getPendingEmail();
         $createdAt = $user->getCreatedAt();
         $modifiedAt = $user->getModifiedAt();
 
@@ -49,6 +66,7 @@ class AccountController extends AbstractController
                 'name' => $name,
                 'email' => $email,
                 'emailVerified' => $emailVerified,
+                'hasPendingEmail' => $hasPendingEmail,
                 'pendingEmail' => $pendingEmail,
                 'createdAt' => $createdAt,
                 'modifiedAt' => $modifiedAt,
@@ -159,4 +177,107 @@ class AccountController extends AbstractController
             'form' => $form,
         ]);
     }
+
+    #[Route('/email', name: 'app_account_email', methods: ['GET', 'POST'])]
+    public function email(Request $request): Response
+    {
+        $user = $this->getUser();
+
+        $form = $this->createForm(ChangeEmailType::class, null, [
+            'csrf_token_id' => 'account_change_email',
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $newEmail = (string) $form->get('newEmail')->getData();
+                $this->accountService->requestEmailChange($user, $newEmail);
+                $this->addFlash('success', 'Te hemos enviado un correo a tu email actual para confirmar el cambio.');
+                return $this->redirectToRoute('app_account_index');
+            } catch (\DomainException $e) {
+                $this->addFlash('danger', $e->getMessage());
+                return $this->redirectToRoute('app_account_email');
+            }
+        }
+
+        return $this->render('account/email.html.twig', [
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/email/confirm/{token}', name: 'app_account_email_confirm', methods: ['GET'])]
+    public function confirmEmail(string $token, Security $security, Request $request): RedirectResponse
+    {
+        try {
+            $currentUser = $this->getUser();
+            $changedUser = $this->accountService->confirmEmailChange($token);
+
+            $cookieName = 'REMEMBERME';
+            $hadRememberMe = $request->cookies->has($cookieName);
+
+            // Re-login si el usuario que confirma es el mismo que el autenticado
+            if ($currentUser instanceof User && $currentUser->getId() === $changedUser->getId()) {
+                if ($hadRememberMe) {
+                    $security->login($changedUser, 'form_login', 'main', [(new RememberMeBadge())->enable()]);
+                } else {
+                    $security->login($changedUser, 'form_login', 'main');
+                }
+            }
+
+            $this->addFlash('success', 'Email actualizado correctamente.');
+        } catch (\DomainException $e) {
+            $this->addFlash('danger', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_account_index');
+    }
+
+    #[Route('/email/resend', name: 'app_account_email_resend', methods: ['POST'])]
+    public function resendEmail(Request $request, CsrfTokenManagerInterface $csrf): RedirectResponse
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('Debes iniciar sesión para acceder a tu cuenta.');
+        }
+
+        $submittedToken = (string) $request->request->get('_token');
+        if (!$csrf->isTokenValid(new CsrfToken('account_email_resend', $submittedToken))) {
+            $this->addFlash('danger', 'Token CSRF inválido.');
+            return $this->redirectToRoute('app_account_index');
+        }
+
+        try {
+            $this->accountService->resendEmailChange($user);
+            $this->addFlash('success', 'Confirmación reenviada a tu email actual.');
+        } catch (\DomainException $e) {
+            $this->addFlash('danger', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_account_index');
+    }
+
+    #[Route('/email/cancel', name: 'app_account_email_cancel', methods: ['POST'])]
+    public function cancelEmail(Request $request, CsrfTokenManagerInterface $csrf): RedirectResponse
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('Debes iniciar sesión para acceder a tu cuenta.');
+        }
+
+        $submittedToken = (string) $request->request->get('_token');
+        if (!$csrf->isTokenValid(new CsrfToken('account_email_cancel', $submittedToken))) {
+            $this->addFlash('danger', 'Token CSRF inválido.');
+            return $this->redirectToRoute('app_account_index');
+        }
+
+        try {
+            $this->accountService->cancelEmailChange($user);
+            $this->addFlash('success', 'Cambio de email cancelado.');
+        } catch (\DomainException $e) {
+            $this->addFlash('danger', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_account_index');
+    }
+
 }

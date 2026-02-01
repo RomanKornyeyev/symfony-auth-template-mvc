@@ -67,4 +67,76 @@ class MailService
 
     $this->mailer->send($email);
   }
+
+  public function sendEmailChangeConfirmationToCurrentEmail(
+    string $to,
+    string $token,
+    string $name = '',
+    string $pendingEmail = ''
+  ): void {
+
+    $url = $this->router->generate('app_account_email_confirm', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
+    $resetPasswordUrl = $this->router->generate('app_forgot_password', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+    $email = (new TemplatedEmail())
+      ->from('no.reply.financeflow.team@gmail.com')
+      ->to($to)
+      ->subject('Confirma el cambio de correo')
+      ->htmlTemplate('email/email_change_confirm_current.html.twig')
+      ->context([
+        'confirmUrl' => $url,
+        'resetPasswordUrl' => $resetPasswordUrl,
+        'pendingEmail' => $pendingEmail,
+        'name' => $name,
+      ]);
+
+    $this->mailer->send($email);
+  }
+
+  public function sendEmailChangeCancelled(string $to, string $name = '', string $pendingEmail = ''): void
+  {
+    $resetPasswordUrl = $this->router->generate('app_forgot_password', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+    $email = (new TemplatedEmail())
+      ->from('no.reply.financeflow.team@gmail.com')
+      ->to($to)
+      ->subject('Cambio de correo cancelado')
+      ->htmlTemplate('email/email_change_cancelled.html.twig')
+      ->context([
+        'resetPasswordUrl' => $resetPasswordUrl,
+        'pendingEmail' => $pendingEmail,
+        'name' => $name,
+      ]);
+
+    $this->mailer->send($email);
+  }
+
+  public function sendEmailChangeCompleted(string $oldEmail, string $newEmail, string $name = ''): void
+  {
+    $resetPasswordUrl = $this->router->generate('app_forgot_password', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+    $context = [
+      'oldEmail' => $oldEmail,
+      'newEmail' => $newEmail,
+      'resetPasswordUrl' => $resetPasswordUrl,
+      'name' => $name,
+    ];
+
+    $emailToOld = (new TemplatedEmail())
+      ->from('no.reply.financeflow.team@gmail.com')
+      ->to($oldEmail)
+      ->subject('Correo actualizado')
+      ->htmlTemplate('email/email_change_completed.html.twig')
+      ->context($context);
+
+    $emailToNew = (new TemplatedEmail())
+      ->from('no.reply.financeflow.team@gmail.com')
+      ->to($newEmail)
+      ->subject('Correo actualizado')
+      ->htmlTemplate('email/email_change_completed.html.twig')
+      ->context($context);
+
+    $this->mailer->send($emailToOld);
+    $this->mailer->send($emailToNew);
+  }
 }
