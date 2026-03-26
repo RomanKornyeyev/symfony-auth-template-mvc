@@ -38,6 +38,12 @@ Aplicación web con un **sistema de autenticación completo**, incluyendo:
 ##### INTERFAZ
 ✅ Interfaz sencilla con **Bootstrap**, 100% **responsive** y con **modo claro/oscuro automático**.
 
+<p align="center">
+    <a href="https://i.imgur.com/S8GQuFm.png" target="_blank">
+        <img src="https://i.imgur.com/S8GQuFm.png" alt="Project Screenshot">
+    </a>
+</p>
+
 ---
 
 ## Instalación y Configuración
