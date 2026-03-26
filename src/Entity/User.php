@@ -32,6 +32,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "string", length: 180, unique: true)]
     private ?string $email = null;
 
+    #[ORM\Column(type: "string", length: 100)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 1, max: 100)]
+    private ?string $nickname = null;
+
+    #[ORM\Column(type: "text", nullable: true)]
+    #[Assert\Length(min: 1, max: 2000)]
+    private ?string $description = null;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $profilePhoto = null;
+
     #[ORM\Column(length: 180, nullable: true)]
     #[Assert\Email(message: 'El correo electrónico no es válido.')]
     private ?string $pendingEmail = null;
@@ -74,6 +86,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
+        return $this;
+    }
+
+    public function getNickname(): ?string
+    {
+        return $this->nickname;
+    }
+
+    public function setNickname(string $nickname): self
+    {
+        $this->nickname = $nickname;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getProfilePhoto(): ?string
+    {
+        return $this->profilePhoto ?: 'media/users/profile_photo/default.jpg';
+    }
+
+    public function setProfilePhoto(?string $profilePhoto): self
+    {
+        $this->profilePhoto = $profilePhoto;
         return $this;
     }
 

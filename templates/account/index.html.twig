@@ -18,12 +18,12 @@
 			<div class="alert alert-info d-flex justify-content-between align-items-center" role="alert">
 				<div>
 					<strong>Cambio de email en curso.</strong>
-					<div class="small text-muted">Nuevo email pendiente de confirmación: {{ account.pendingEmail }}.</div>
-					<div class="small text-muted">Revisa tu bandeja de entrada para confirmar el cambio. Ve a la sección de email para ver más opciones.</div>
+					{% if emailChangeStep == 1 %}
+						<div class="small text-muted">Revisa tu bandeja de <strong>{{ account.email }}</strong> y autoriza el cambio.</div>
+					{% else %}
+						<div class="small text-muted">Autorizado. Revisa la bandeja de <strong>{{ account.pendingEmail }}</strong> y confirma el cambio.</div>
+					{% endif %}
 				</div>
-				{# <a class="btn btn-outline-primary btn-sm" href="{{ path('app_account_email') }}">
-					Ver cambio de email
-				</a> #}
 			</div>
 		{% endif %}
 
@@ -35,34 +35,56 @@
 				<div class="card shadow-sm h-100 bg-body-tertiary">
 					<div class="card-body">
 						<h2 class="h4 mb-3">Perfil</h2>
-
-						<dl class="row mb-0">
-							<dt class="col-sm-4 text-muted">Nombre</dt>
-							<dd class="col-sm-8 mb-2">
-								{% if account.name %}
-									{{ account.name }}
-								{% else %}
-									<span class="text-muted">No definido</span>
-								{% endif %}
-							</dd>
-							<dt>&nbsp;</dt>
-							<dt class="col-sm-4 small text-muted">Creado el</dt>
-							<dd class="col-sm-8 mb-2 small text-secondary">
-								{% if account.createdAt %}
-									{{ account.createdAt|date('d/m/Y H:i') }}
-								{% else %}
-									<span class="text-muted">—</span>
-								{% endif %}
-							</dd>
-							<dt class="col-sm-4 small text-muted">Última modificación</dt>
-							<dd class="col-sm-8 mb-0 small text-secondary">
-								{% if account.modifiedAt %}
-									{{ account.modifiedAt|date('d/m/Y H:i') }}
-								{% else %}
-									<span class="text-muted">—</span>
-								{% endif %}
-							</dd>
-						</dl>
+						
+						<div class="row gx-0">
+							<div class="col-md-3 d-grid mb-3" style="place-items: center;">
+								<img src="{{ asset(account.profilePhoto) }}" alt="Foto de perfil" class="rounded-circle border border-3 border-primary" style="width: 120px; height: 120px; object-fit: cover;">
+							</div>
+							<dl class="col-md-9 row mb-0">
+								<dt class="col-sm-4 text-muted">Apodo</dt>
+								<dd class="col-sm-8 mb-2">
+									{% if account.nickname %}
+										{{ account.nickname }}
+									{% else %}
+										<span class="text-muted">No definido</span>
+									{% endif %}
+								</dd>
+								<dt class="col-sm-4 text-muted">Nombre</dt>
+								<dd class="col-sm-8 mb-2">
+									{% if account.name %}
+										{{ account.name }}
+									{% else %}
+										<span class="text-muted">No definido</span>
+									{% endif %}
+								</dd>
+								<dt class="col-sm-4 text-muted">Descripción</dt>
+								<dd class="col-sm-8 mb-2">
+									{% if account.description %}
+										{{ account.description }}
+									{% else %}
+										<span class="text-muted">No definido</span>
+									{% endif %}
+								</dd>
+								
+								<dt>&nbsp;</dt>
+								<dt class="col-sm-4 small text-muted">Creado el</dt>
+								<dd class="col-sm-8 mb-2 small text-secondary">
+									{% if account.createdAt %}
+										{{ account.createdAt|date('d/m/Y H:i') }}
+									{% else %}
+										<span class="text-muted">—</span>
+									{% endif %}
+								</dd>
+								<dt class="col-sm-4 small text-muted">Ult. modificación</dt>
+								<dd class="col-sm-8 mb-0 small text-secondary">
+									{% if account.modifiedAt %}
+										{{ account.modifiedAt|date('d/m/Y H:i') }}
+									{% else %}
+										<span class="text-muted">—</span>
+									{% endif %}
+								</dd>
+							</dl>
+						</div>
 					</div>
 
 					<div class="card-footer bg-transparent d-flex justify-content-end">
@@ -118,11 +140,10 @@
 									{% endif %}
 								</p>
 								{% if account.hasPendingEmail %}
-									{# <div class="mb-2 text-center"> <hr class="w-75 d-inline-block"></div> #}
 									<div class="alert alert-info" role="alert">
 										<p class="mt-2"><strong><i class="fa-solid fa-circle-info text-info"></i> Cambio de email en curso.</strong></p>
-										<p class="mt-2">{{ account.email }} -> {{ account.pendingEmail }}</p>		
-										{{ include('account/partials/_pending_email_timeline.html.twig') }}
+										<p class="mt-2">{{ account.email }} → {{ account.pendingEmail }}</p>
+										{{ include('account/partials/_pending_email_timeline.html.twig', { emailChangeStep: emailChangeStep }) }}
 									</div>
 								{% endif %}
 							</div>

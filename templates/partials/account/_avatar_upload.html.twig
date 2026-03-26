@@ -1,0 +1,57 @@
+{# Requiere:
+   - fileField (FormView)
+   - initialUrl (string)
+   - fallbackUrl (string)
+   Opcional:
+   - removeField (FormView|null)
+   - size (int) px (default 140)
+#}
+
+{% set size = size|default(140) %}
+
+<div
+  class="d-grid gap-2 justify-content-center mb-3"
+  style="place-items: center;"
+  {{ stimulus_controller('avatar-upload', {
+    initialUrl: initialUrl,
+    fallbackUrl: fallbackUrl
+  }) }}
+>
+  <div class="ratio ratio-1x1" style="width: {{ size }}px; max-width: 100%;">
+    <img
+      class="rounded-circle border border-3 border-primary w-100 h-100"
+      style="object-fit: cover;"
+      alt="Foto de perfil"
+      src="{{ initialUrl }}"
+      {{ stimulus_target('avatar-upload', 'preview') }}
+    >
+  </div>
+
+  <div class="d-flex gap-1 mt-1">
+    <button type="button" class="btn btn-outline-primary px-3 py-1" title="Cambiar foto" data-action="avatar-upload#pick">
+      <i class="fa-solid fa-camera me-1"></i>Cambiar
+    </button>
+    <button type="button" class="btn btn-outline-secondary px-3 py-1" title="Deshacer" data-action="avatar-upload#undo">
+      <i class="fa-solid fa-rotate-left"></i>
+    </button>
+    <button type="button" class="btn btn-outline-danger px-3 py-1" title="Quitar foto" data-action="avatar-upload#remove">
+      <i class="fa-solid fa-trash"></i>
+    </button>
+  </div>
+
+  {{ form_widget(fileField, {
+    attr: {
+      class: 'form-control visually-hidden',
+      'data-avatar-upload-target': 'input',
+      'data-action': 'change->avatar-upload#change'
+    }
+  }) }}
+
+  {% if removeField is defined and removeField %}
+    {{ form_widget(removeField, {
+      attr: { 'data-avatar-upload-target': 'remove' }
+    }) }}
+  {% endif %}
+
+  {{ form_errors(fileField) }}
+</div>

@@ -27,6 +27,9 @@
 		<script defer src="{{ asset('js/color_mode.js') }}"></script>
 		<script defer src="{{ asset('js/flashes_animation.js') }}"></script>
 		<script defer src="{{ asset('js/tooltips.js') }}"></script>
+
+		{# Esto carga assets/app.js + Stimulus #}
+		{{ importmap('app') }}
 	</head>
 	<body class="bg-body">
 		<!-- GLOBAL CONTAINER -->

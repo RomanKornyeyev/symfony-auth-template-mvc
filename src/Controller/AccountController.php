@@ -15,19 +15,19 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 // Entities, repositories, forms
 use App\Entity\User;
-use App\Entity\UserToken;
 use App\Form\ProfileType;
 use App\Form\ChangeEmailType;
 use App\Form\ChangePasswordType;
-use App\Repository\UserTokenRepository;
 
 // Services
 use App\Service\UserService;
 use App\Service\AccountService;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ProfilePhotoManager;
 
 #[Route('/cuenta')]
 class AccountController extends AbstractController
@@ -55,6 +55,9 @@ class AccountController extends AbstractController
         // data
         $name = $user->getName();
         $email = $user->getEmail();
+        $nickname = $user->getNickname();
+        $description = $user->getDescription();
+        $profilePhoto = $user->getProfilePhoto();
         $emailVerified = $user->isVerified();
         $hasPendingEmail = $user->hasPendingEmailChange();
         $pendingEmail = $user->getPendingEmail();
@@ -65,30 +68,56 @@ class AccountController extends AbstractController
             'account' => [
                 'name' => $name,
                 'email' => $email,
+                'nickname' => $nickname,
+                'description' => $description,
+                'profilePhoto' => $profilePhoto,
                 'emailVerified' => $emailVerified,
                 'hasPendingEmail' => $hasPendingEmail,
                 'pendingEmail' => $pendingEmail,
                 'createdAt' => $createdAt,
                 'modifiedAt' => $modifiedAt,
             ],
+            'emailChangeStep' => $hasPendingEmail ? $this->accountService->getEmailChangeStep($user) : 0,
         ]);
     }
 
     #[Route('/editar', name: 'app_account_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, EntityManagerInterface $em): Response
+    public function edit(Request $request, EntityManagerInterface $em, ProfilePhotoManager $photoManager): Response
     {
         $user = $this->getUser();
+        if (!$user instanceof \App\Entity\User) {
+            throw $this->createAccessDeniedException('Usuario autenticado no es App\\Entity\\User.');
+        }
         $form = $this->createForm(ProfileType::class, $user, [
             'csrf_token_id' => 'account_edit_profile',
         ]);
 
         $form->handleRequest($request);
+        
         if ($form->isSubmitted() && $form->isValid()) {
+            // Manejo de foto de perfil
+            $projectDir = $this->getParameter('kernel.project_dir');
+            /** @var UploadedFile|null $file */
+            $file = $form->get('profilePhotoFile')->getData();
+            $remove = $form->has('removeProfilePhoto') && $form->get('removeProfilePhoto')->getData() === '1';
+            $oldPath = $user->getProfilePhoto();
+
+            if ($file instanceof UploadedFile) {
+                $photoManager->deleteRelativePath($oldPath, $projectDir);
+                $newPath = $photoManager->storeForUser($user->getId(), $file);
+                $user->setProfilePhoto($newPath);
+            } else {
+                if ($remove) {
+                    $photoManager->deleteRelativePath($oldPath, $projectDir);
+                    $user->setProfilePhoto(null);
+                }
+            }
+
             // guardar en la bd
             $em->flush(); 
 
             // mensaje de éxito
-            $this->addFlash('success', 'Nombre actualizado correctamente.');
+            $this->addFlash('success', 'Perfil actualizado correctamente.');
             return $this->redirectToRoute('app_account_index');
         }
 
@@ -192,17 +221,35 @@ class AccountController extends AbstractController
             try {
                 $newEmail = (string) $form->get('newEmail')->getData();
                 $this->accountService->requestEmailChange($user, $newEmail);
-                $this->addFlash('success', 'Te hemos enviado un correo a tu email actual para confirmar el cambio.');
-                return $this->redirectToRoute('app_account_index');
+                $this->addFlash('success', 'Te hemos enviado un enlace de autorización a tu email actual. Haz clic en él para continuar.');
+                return $this->redirectToRoute('app_account_email');
             } catch (\DomainException $e) {
                 $this->addFlash('danger', $e->getMessage());
                 return $this->redirectToRoute('app_account_email');
             }
         }
 
+        $emailChangeStep = $user instanceof User && $user->hasPendingEmailChange()
+            ? $this->accountService->getEmailChangeStep($user)
+            : 0;
+
         return $this->render('account/email.html.twig', [
             'form' => $form,
+            'emailChangeStep' => $emailChangeStep,
         ]);
+    }
+
+    #[Route('/email/authorize/{token}', name: 'app_account_email_authorize', methods: ['GET'])]
+    public function authorizeEmail(string $token): RedirectResponse
+    {
+        try {
+            $this->accountService->authorizeEmailChange($token);
+            $this->addFlash('success', 'Cambio autorizado. Te hemos enviado un enlace de confirmación a tu nuevo correo.');
+        } catch (\DomainException $e) {
+            $this->addFlash('danger', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_account_email');
     }
 
     #[Route('/email/confirm/{token}', name: 'app_account_email_confirm', methods: ['GET'])]
@@ -248,7 +295,7 @@ class AccountController extends AbstractController
 
         try {
             $this->accountService->resendEmailChange($user);
-            $this->addFlash('success', 'Confirmación reenviada a tu email actual.');
+            $this->addFlash('success', 'Confirmación reenviada.');
         } catch (\DomainException $e) {
             $this->addFlash('danger', $e->getMessage());
         }

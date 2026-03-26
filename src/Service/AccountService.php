@@ -30,21 +30,92 @@ class AccountService
 
         $this->assertEmailAvailable($newEmail);
 
-        // Un solo token activo -> marcamos usados (invalidamos) los anteriores (histórico)
         $this->tokenRepo->invalidateActiveEmailChangeTokensForUser($user);
 
         $user->setPendingEmail($newEmail);
 
-        $token = new UserToken($user, UserToken::TYPE_EMAIL_CHANGE);
+        $token = new UserToken($user, UserToken::TYPE_EMAIL_CHANGE_AUTHORIZE);
         $this->em->persist($token);
         $this->em->flush();
 
-        $this->mailService->sendEmailChangeConfirmationToCurrentEmail(
+        $this->mailService->sendEmailChangeAuthorizeToCurrentEmail(
             (string) $user->getEmail(),
             $token->getToken(),
             (string) $user->getName(),
             $newEmail
         );
+    }
+
+    /**
+     * Paso 1: el usuario hace clic en el link del email actual.
+     * Se crea el token de confirmación y se envía al nuevo email.
+     */
+    public function authorizeEmailChange(string $tokenValue): void
+    {
+        $userToken = $this->tokenRepo->findValidToken($tokenValue, UserToken::TYPE_EMAIL_CHANGE_AUTHORIZE);
+        if (!$userToken) {
+            throw new \DomainException('El enlace de autorización no es válido o ha caducado.');
+        }
+
+        $user = $userToken->getUser();
+
+        if (!$user->hasPendingEmailChange()) {
+            $userToken->markAsUsed();
+            $this->em->flush();
+            throw new \DomainException('No hay ningún cambio de email pendiente.');
+        }
+
+        $newEmail = (string) $user->getPendingEmail();
+
+        $this->assertEmailAvailable($newEmail, $user);
+
+        $userToken->markAsUsed();
+
+        $confirmToken = new UserToken($user, UserToken::TYPE_EMAIL_CHANGE_CONFIRM);
+        $this->em->persist($confirmToken);
+        $this->em->flush();
+
+        $this->mailService->sendEmailChangeConfirmToNewEmail(
+            $newEmail,
+            $confirmToken->getToken(),
+            (string) $user->getName()
+        );
+    }
+
+    /**
+     * Paso 2: el usuario hace clic en el link del nuevo email.
+     * Se actualiza el email definitivamente.
+     */
+    public function confirmEmailChange(string $tokenValue): User
+    {
+        $userToken = $this->tokenRepo->findValidToken($tokenValue, UserToken::TYPE_EMAIL_CHANGE_CONFIRM);
+        if (!$userToken) {
+            throw new \DomainException('El enlace de confirmación no es válido o ha caducado.');
+        }
+
+        $user = $userToken->getUser();
+
+        if (!$user->hasPendingEmailChange()) {
+            $userToken->markAsUsed();
+            $this->em->flush();
+            throw new \DomainException('No hay ningún cambio de email pendiente.');
+        }
+
+        $oldEmail = (string) $user->getEmail();
+        $newEmail = (string) $user->getPendingEmail();
+
+        $this->assertEmailAvailable($newEmail, $user);
+
+        $user->setEmail($newEmail);
+        $user->setPendingEmail(null);
+
+        $userToken->markAsUsed();
+        $this->em->flush();
+
+        $this->mailService->sendEmailChangeCompleted($oldEmail, $newEmail, (string) $user->getName());
+
+        $this->em->refresh($user);
+        return $user;
     }
 
     public function resendEmailChange(User $user): void
@@ -53,18 +124,32 @@ class AccountService
             throw new \DomainException('No hay ningún cambio de email pendiente.');
         }
 
+        $isStep1 = $this->tokenRepo->findActiveAuthorizeTokenForUser($user) !== null;
+
         $this->tokenRepo->invalidateActiveEmailChangeTokensForUser($user);
 
-        $token = new UserToken($user, UserToken::TYPE_EMAIL_CHANGE);
-        $this->em->persist($token);
-        $this->em->flush();
+        $newEmail = (string) $user->getPendingEmail();
 
-        $this->mailService->sendEmailChangeConfirmationToCurrentEmail(
-            (string) $user->getEmail(),
-            $token->getToken(),
-            (string) $user->getName(),
-            (string) $user->getPendingEmail()
-        );
+        if ($isStep1) {
+            $token = new UserToken($user, UserToken::TYPE_EMAIL_CHANGE_AUTHORIZE);
+            $this->em->persist($token);
+            $this->em->flush();
+            $this->mailService->sendEmailChangeAuthorizeToCurrentEmail(
+                (string) $user->getEmail(),
+                $token->getToken(),
+                (string) $user->getName(),
+                $newEmail
+            );
+        } else {
+            $token = new UserToken($user, UserToken::TYPE_EMAIL_CHANGE_CONFIRM);
+            $this->em->persist($token);
+            $this->em->flush();
+            $this->mailService->sendEmailChangeConfirmToNewEmail(
+                $newEmail,
+                $token->getToken(),
+                (string) $user->getName()
+            );
+        }
     }
 
     public function cancelEmailChange(User $user): void
@@ -86,39 +171,19 @@ class AccountService
         );
     }
 
-    public function confirmEmailChange(string $tokenValue): User
+    /**
+     * Devuelve el paso actual del flujo de cambio de email:
+     * 1 = esperando autorización (link en email actual)
+     * 2 = esperando confirmación (link en nuevo email)
+     * 0 = sin cambio pendiente
+     */
+    public function getEmailChangeStep(User $user): int
     {
-        $userToken = $this->tokenRepo->findValidToken($tokenValue, UserToken::TYPE_EMAIL_CHANGE);
-        if (!$userToken) {
-            throw new \DomainException('El enlace de confirmación no es válido o ha caducado.');
-        }
-
-        $user = $userToken->getUser();
-
         if (!$user->hasPendingEmailChange()) {
-            $userToken->markAsUsed();
-            $this->em->flush();
-            throw new \DomainException('No hay ningún cambio de email pendiente.');
+            return 0;
         }
 
-        $oldEmail = (string) $user->getEmail();
-        $newEmail = (string) $user->getPendingEmail();
-
-        // Re-validación por si hubo carrera
-        $this->assertEmailAvailable($newEmail, $user);
-
-        $user->setEmail($newEmail);
-        $user->setPendingEmail(null);
-
-        $userToken->markAsUsed();
-        $this->em->flush();
-
-        $this->mailService->sendEmailChangeCompleted($oldEmail, $newEmail, (string) $user->getName());
-
-        // Retornamos el usuario para que el controlador pueda iniciar sesión si es necesario
-        // Reload de usuario para actualizar el nuevo mail
-        $this->em->refresh($user);
-        return $user;
+        return $this->tokenRepo->findActiveAuthorizeTokenForUser($user) !== null ? 1 : 2;
     }
 
     private function assertEmailAvailable(string $email, ?User $excludeUser = null): void

@@ -1,0 +1,31 @@
+{% extends 'email/base.html.twig' %}
+
+{% block cuerpo_email %}
+    {% include 'email/partials/_bloque_titulo.html.twig' with { titulo: 'Confirma tu nuevo correo' } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: 'Hola <strong>' ~ name ~ '</strong>, haz clic en el botón para confirmar que este es tu nuevo correo electrónico en CalBuddy.'
+    } %}
+
+    {% include 'email/partials/_bloque_botones.html.twig' with {
+        botones: [
+            {
+                partial: 'email/partials/_boton_primary.html.twig',
+                params: {
+                    href: confirmUrl,
+                    texto: 'Confirmar nuevo correo',
+                }
+            }
+        ]
+    } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with { texto: '
+        Si no visualiza el botón directamente, copie y pegue el enlace:
+    ' } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with { texto: confirmUrl } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: 'Si no esperabas este correo, puedes ignorarlo. Tu cuenta no se verá afectada.'
+    } %}
+{% endblock %}

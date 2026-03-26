@@ -1,10 +1,12 @@
-<div class="mt-3">
-	<div
-		class="position-relative">
-		{# Tramo 1 -> 2 (completado) #}
-		<div class="position-absolute top-50 translate-middle-y border-top border-2 border-success opacity-50" style="left:16.666%; width:33.333%;"></div>
+{# emailChangeStep: 1 = esperando autorización (email actual), 2 = esperando confirmación (nuevo email) #}
+{% set step = emailChangeStep|default(1) %}
 
-		{# Tramo 2 -> 3 (pendiente) #}
+<div class="mt-3">
+	<div class="position-relative">
+		{# Tramo 1 -> 2 #}
+		<div class="position-absolute top-50 translate-middle-y border-top border-2 {{ step >= 2 ? 'border-success opacity-50' : 'border-secondary opacity-25' }}" style="left:16.666%; width:33.333%;"></div>
+
+		{# Tramo 2 -> 3 #}
 		<div class="position-absolute top-50 translate-middle-y border-top border-2 border-secondary opacity-25" style="left:50%; width:33.333%;"></div>
 
 		<div class="row g-0">
@@ -15,13 +17,19 @@
 			</div>
 
 			<div class="col text-center">
-				<span class="btn btn-success btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center position-relative z-1" style="width:20px;height:20px;" aria-label="Email enviado">
-					<i class="fa-solid fa-check fa-xs"></i>
-				</span>
+				{% if step >= 2 %}
+					<span class="btn btn-success btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center position-relative z-1" style="width:20px;height:20px;" aria-label="Email actual autorizado">
+						<i class="fa-solid fa-check fa-xs"></i>
+					</span>
+				{% else %}
+					<span class="btn btn-outline-secondary btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center position-relative z-1" style="width:20px;height:20px;" aria-label="Pendiente de autorizar">
+						<i class="fa-solid fa-circle fa-2xs"></i>
+					</span>
+				{% endif %}
 			</div>
 
 			<div class="col text-center">
-				<span class="btn btn-outline-secondary btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center position-relative z-1" style="width:20px;height:20px;" aria-label="Email confirmado">
+				<span class="btn btn-outline-secondary btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center position-relative z-1" style="width:20px;height:20px;" aria-label="Pendiente de confirmar nuevo email">
 					<i class="fa-solid fa-circle fa-2xs"></i>
 				</span>
 			</div>
@@ -33,10 +41,10 @@
 			<small class="text-success">Solicitado</small>
 		</div>
 		<div class="col text-center">
-			<small class="text-success">Email enviado</small>
+			<small class="{{ step >= 2 ? 'text-success' : 'text-body-secondary' }}">Email actual</small>
 		</div>
 		<div class="col text-center">
-			<small class="text-body-secondary">Verificado</small>
+			<small class="text-body-secondary">Nuevo email</small>
 		</div>
 	</div>
 </div>

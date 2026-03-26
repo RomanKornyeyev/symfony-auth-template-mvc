@@ -33,7 +33,7 @@ Aplicación web con un **sistema de autenticación completo**, incluyendo:
 ##### GESTIÓN DE PERFIL (DASHBOARD)
 ✅ **edición de datos**  
 ✅ **edición de password con throttling y confirmación por email**  
-⌛ **edición de email con confirmación por email**  
+✅ **cambio de email con autorización + confirmación por email**  
 
 ##### INTERFAZ
 ✅ Interfaz sencilla con **Bootstrap**, 100% **responsive** y con **modo claro/oscuro automático**.
@@ -42,7 +42,7 @@ Aplicación web con un **sistema de autenticación completo**, incluyendo:
 
 ## Instalación y Configuración
 
-### OPCIÓN 1: CLONAR E INSTALAR DEPENDENCIAS (RECOMENDADO)
+### 1 - CLONAR E INSTALAR DEPENDENCIAS
 
 #### 1.1 Instalar dependencias
 ```bash
@@ -67,7 +67,7 @@ php bin/console doctrine:migrations:migrate
 ```
 <i>*Si no tienes schema, ejecuta ``php bin/console doctrine:database:create``</i>
 
-_
+<!-- _
 
 ### OPCIÓN 2: INICIAR UN NUEVO PROYECTO Y COPIAR ARCHIVOS NECESARIOS
 
@@ -121,7 +121,7 @@ _
 > 
 > Este proyecto está construido con **Symfony CLI 5.16.1**, **Symfony 8.0.3** y **PHP 8.4.3**.
 > Versiones anteriores y posteriores pueden presentar incompatibilidades.
-
+ -->
 
 ---
 

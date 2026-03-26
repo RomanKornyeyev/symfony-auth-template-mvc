@@ -31,3 +31,7 @@
 
 # Node: Ignorar la carpeta de módulos instalados
 /node_modules/
+
+# Media: Ignorar fotos de perfil de usuarios, excepto la imagen por defecto
+/public/media/users/profile_photo/*/
+!/public/media/users/profile_photo/default.jpg

@@ -1,0 +1,49 @@
+{% extends 'email/base.html.twig' %}
+
+{% block cuerpo_email %}
+    {% include 'email/partials/_bloque_titulo.html.twig' with { titulo: 'Autoriza el cambio de correo' } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: 'Hola <strong>' ~ name ~ '</strong>, has solicitado cambiar tu correo a: <strong>' ~ pendingEmail ~ '</strong>.'
+    } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: 'Haz clic en el siguiente botón para autorizar el cambio. A continuación recibirás un enlace de confirmación en tu nuevo correo.'
+    } %}
+
+    {% include 'email/partials/_bloque_botones.html.twig' with {
+        botones: [
+            {
+                partial: 'email/partials/_boton_primary.html.twig',
+                params: {
+                    href: authorizeUrl,
+                    texto: 'Autorizar cambio de correo',
+                }
+            }
+        ]
+    } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with { texto: '
+        Si no visualiza el botón directamente, copie y pegue el enlace:
+    ' } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with { texto: authorizeUrl } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with {
+        texto: 'Si no has solicitado este cambio, ignora este correo. Para mayor seguridad puedes restablecer tu contraseña:'
+    } %}
+
+    {% include 'email/partials/_bloque_botones.html.twig' with {
+        botones: [
+            {
+                partial: 'email/partials/_boton_primary.html.twig',
+                params: {
+                    href: resetPasswordUrl,
+                    texto: 'Restablecer contraseña',
+                }
+            }
+        ]
+    } %}
+
+    {% include 'email/partials/_bloque_texto.html.twig' with { texto: resetPasswordUrl } %}
+{% endblock %}

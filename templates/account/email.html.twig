@@ -8,24 +8,33 @@
 			<h1 class="text-center mb-3">Cambiar email</h1>
 			<p class="text-center mb-3">
         {% if app.user.pendingEmail %}
-          Actualmente tienes un cambio de email pendiente.
+          {% if emailChangeStep == 1 %}
+            Revisa tu email actual y haz clic en el enlace de autorización.
+          {% else %}
+            Autorizado. Ahora confirma desde tu nuevo email.
+          {% endif %}
         {% else %}
-          Se enviará un email de confirmación.
+          Introduce tu nuevo email. Te enviaremos un enlace de autorización.
         {% endif %}
       </p>
 
 			{% if app.user.pendingEmail %}
 				<div class="alert alert-info" role="alert">
-					<strong>Email pendiente:</strong>
-					{{ app.user.pendingEmail }}<br>
-					<span class="small text-muted">Confirma desde tu correo actual, o reenvía/cancela.</span>
-          {{ include('account/partials/_pending_email_timeline.html.twig') }}
+					<strong>Nuevo email:</strong> {{ app.user.pendingEmail }}<br>
+					{% if emailChangeStep == 1 %}
+						<span class="small text-muted">Revisa la bandeja de <strong>{{ app.user.email }}</strong> y haz clic en el enlace de autorización.</span>
+					{% else %}
+						<span class="small text-muted">Autorizado. Revisa la bandeja de <strong>{{ app.user.pendingEmail }}</strong> y haz clic en el enlace de confirmación.</span>
+					{% endif %}
+					{{ include('account/partials/_pending_email_timeline.html.twig', { emailChangeStep: emailChangeStep }) }}
 				</div>
 
 				<div class="d-flex gap-2">
 					<form method="post" action="{{ path('app_account_email_resend') }}">
 						<input type="hidden" name="_token" value="{{ csrf_token('account_email_resend') }}">
-						<button class="btn btn-outline-primary" type="submit">Reenviar confirmación</button>
+						<button class="btn btn-outline-primary" type="submit">
+							{% if emailChangeStep == 1 %}Reenviar al email actual{% else %}Reenviar al nuevo email{% endif %}
+						</button>
 					</form>
 
 					<form method="post" action="{{ path('app_account_email_cancel') }}">
@@ -35,14 +44,13 @@
 				</div>
 
         <div class="mt-5 text-center">
-          
           <a href="{{ path('app_account_index') }}" class="btn btn-primary"><i class="fa-solid fa-angle-left"></i> Volver a la cuenta</a>
         </div>
 			{% else %}
 				{{ form_start(form, { 'attr': { 'class': 'p-4 p-md-5 border rounded-3 bg-body-tertiary' } }) }}
           {{ form_row(form.newEmail) }}
           <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-primary">Enviar verificación</button>
+              <button type="submit" class="btn btn-primary">Enviar enlace de autorización</button>
               <a href="{{ path('app_account_index') }}" class="btn btn-outline-primary">Cancelar</a>
           </div>
 				{{ form_end(form) }}

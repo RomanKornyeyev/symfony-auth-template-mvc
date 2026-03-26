@@ -12,7 +12,9 @@ class UserToken
 {
     public const TYPE_REGISTRATION = 'registration';
     public const TYPE_PASSWORD_RESET = 'password_reset';
-    public const TYPE_EMAIL_CHANGE = 'email_change';
+    public const TYPE_EMAIL_CHANGE = 'email_change'; // legacy
+    public const TYPE_EMAIL_CHANGE_AUTHORIZE = 'email_change_authorize';
+    public const TYPE_EMAIL_CHANGE_CONFIRM = 'email_change_confirm';
 
     use TimestampableEntity;
 
@@ -30,7 +32,7 @@ class UserToken
     private string $token;
 
     #[ORM\Column(type: "string")]
-    #[Assert\Choice([self::TYPE_REGISTRATION, self::TYPE_PASSWORD_RESET, self::TYPE_EMAIL_CHANGE])]
+    #[Assert\Choice([self::TYPE_REGISTRATION, self::TYPE_PASSWORD_RESET, self::TYPE_EMAIL_CHANGE, self::TYPE_EMAIL_CHANGE_AUTHORIZE, self::TYPE_EMAIL_CHANGE_CONFIRM])]
     private string $type;
 
     #[ORM\Column(type: "datetime")]

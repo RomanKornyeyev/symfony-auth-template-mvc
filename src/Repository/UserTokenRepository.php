@@ -20,11 +20,15 @@ class UserTokenRepository extends ServiceEntityRepository
             ->update()
             ->set('t.used', ':used')
             ->where('t.user = :user')
-            ->andWhere('t.type = :type')
+            ->andWhere('t.type IN (:types)')
             ->andWhere('t.used = false')
             ->setParameter('used', true)
             ->setParameter('user', $user)
-            ->setParameter('type', UserToken::TYPE_EMAIL_CHANGE)
+            ->setParameter('types', [
+                UserToken::TYPE_EMAIL_CHANGE,
+                UserToken::TYPE_EMAIL_CHANGE_AUTHORIZE,
+                UserToken::TYPE_EMAIL_CHANGE_CONFIRM,
+            ])
             ->getQuery()
             ->execute();
     }
@@ -43,7 +47,7 @@ class UserTokenRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function findActiveEmailChangeTokenForUser(User $user): ?UserToken
+    public function findActiveAuthorizeTokenForUser(User $user): ?UserToken
     {
         return $this->createQueryBuilder('t')
             ->where('t.user = :user')
@@ -51,7 +55,23 @@ class UserTokenRepository extends ServiceEntityRepository
             ->andWhere('t.used = false')
             ->andWhere('t.expiresAt > :now')
             ->setParameter('user', $user)
-            ->setParameter('type', UserToken::TYPE_EMAIL_CHANGE)
+            ->setParameter('type', UserToken::TYPE_EMAIL_CHANGE_AUTHORIZE)
+            ->setParameter('now', new \DateTime())
+            ->orderBy('t.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findActiveConfirmTokenForUser(User $user): ?UserToken
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.user = :user')
+            ->andWhere('t.type = :type')
+            ->andWhere('t.used = false')
+            ->andWhere('t.expiresAt > :now')
+            ->setParameter('user', $user)
+            ->setParameter('type', UserToken::TYPE_EMAIL_CHANGE_CONFIRM)
             ->setParameter('now', new \DateTime())
             ->orderBy('t.id', 'DESC')
             ->setMaxResults(1)

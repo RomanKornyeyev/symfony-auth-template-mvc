@@ -2,7 +2,6 @@
 namespace App\Service;
 
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -68,25 +67,44 @@ class MailService
     $this->mailer->send($email);
   }
 
-  public function sendEmailChangeConfirmationToCurrentEmail(
+  public function sendEmailChangeAuthorizeToCurrentEmail(
     string $to,
     string $token,
     string $name = '',
     string $pendingEmail = ''
   ): void {
-
-    $url = $this->router->generate('app_account_email_confirm', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
+    $url = $this->router->generate('app_account_email_authorize', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
     $resetPasswordUrl = $this->router->generate('app_forgot_password', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
     $email = (new TemplatedEmail())
       ->from('no.reply.financeflow.team@gmail.com')
       ->to($to)
-      ->subject('Confirma el cambio de correo')
-      ->htmlTemplate('email/email_change_confirm_current.html.twig')
+      ->subject('Autoriza el cambio de correo')
+      ->htmlTemplate('email/email_change_authorize_current.html.twig')
       ->context([
-        'confirmUrl' => $url,
+        'authorizeUrl' => $url,
         'resetPasswordUrl' => $resetPasswordUrl,
         'pendingEmail' => $pendingEmail,
+        'name' => $name,
+      ]);
+
+    $this->mailer->send($email);
+  }
+
+  public function sendEmailChangeConfirmToNewEmail(
+    string $to,
+    string $token,
+    string $name = ''
+  ): void {
+    $url = $this->router->generate('app_account_email_confirm', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
+
+    $email = (new TemplatedEmail())
+      ->from('no.reply.financeflow.team@gmail.com')
+      ->to($to)
+      ->subject('Confirma tu nuevo correo')
+      ->htmlTemplate('email/email_change_confirm_new.html.twig')
+      ->context([
+        'confirmUrl' => $url,
         'name' => $name,
       ]);
 
