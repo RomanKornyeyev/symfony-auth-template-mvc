@@ -1,0 +1,156 @@
+{#
+  Partial: botones de acción de amistad.
+  Renderizado dentro de un div con data-controller="friendship".
+  El controller Stimulus reemplaza este innerHTML tras cada acción AJAX.
+
+  Variables requeridas:
+    - friendship:  Friendship|null
+    - targetUser:  User
+    - currentUser: User
+#}
+{% set csrfToken = csrf_token('friendship_' ~ targetUser.id) %}
+
+<div class="d-flex gap-2 flex-wrap align-items-center">
+
+{% if friendship is null or friendship.isRejected() %}
+
+    {# ── Sin relación (o solicitud rechazada) → invitar + bloquear ────── #}
+    <form method="post"
+          action="{{ path('app_friends_send_request', {userId: targetUser.id}) }}"
+          data-action="submit->friendship#submit"
+          data-turbo="false">
+        <input type="hidden" name="_token" value="{{ csrfToken }}">
+        <button type="submit" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-user-plus me-1"></i>Añadir amigo
+        </button>
+    </form>
+    <form method="post"
+          action="{{ path('app_friends_block', {userId: targetUser.id}) }}"
+          data-action="submit->friendship#submit"
+          data-confirm="¿Confirmas que quieres bloquear a {{ targetUser.nickname }}? No podrá enviarte solicitudes de amistad."
+          data-turbo="false">
+        <input type="hidden" name="_token" value="{{ csrfToken }}">
+        <button type="submit" class="btn btn-outline-danger btn-sm">
+            <i class="fa-solid fa-ban me-1"></i>Bloquear
+        </button>
+    </form>
+
+{% elseif friendship.isPending() %}
+
+    {% if friendship.requester.id == currentUser.id %}
+
+        {# ── Solicitud enviada por el usuario actual → cancelar + bloquear ─ #}
+        <span class="btn btn-outline-secondary btn-sm disabled pe-none">
+            <i class="fa-solid fa-clock me-1"></i>Solicitud enviada
+        </span>
+        <form method="post"
+              action="{{ path('app_friends_cancel', {id: friendship.id}) }}"
+              data-action="submit->friendship#submit"
+              data-turbo="false">
+            <input type="hidden" name="_token" value="{{ csrfToken }}">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-xmark me-1"></i>Cancelar
+            </button>
+        </form>
+        <form method="post"
+              action="{{ path('app_friends_block', {userId: targetUser.id}) }}"
+              data-action="submit->friendship#submit"
+              data-confirm="¿Confirmas que quieres bloquear a {{ targetUser.nickname }}? No podrá enviarte solicitudes de amistad."
+              data-turbo="false">
+            <input type="hidden" name="_token" value="{{ csrfToken }}">
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+                <i class="fa-solid fa-ban me-1"></i>Bloquear
+            </button>
+        </form>
+
+    {% else %}
+
+        {# ── Solicitud recibida → aceptar / rechazar / bloquear ───────── #}
+        <form method="post"
+              action="{{ path('app_friends_accept', {id: friendship.id}) }}"
+              data-action="submit->friendship#submit"
+              data-turbo="false">
+            <input type="hidden" name="_token" value="{{ csrfToken }}">
+            <button type="submit" class="btn btn-success btn-sm">
+                <i class="fa-solid fa-check me-1"></i>Aceptar
+            </button>
+        </form>
+        <form method="post"
+              action="{{ path('app_friends_reject', {id: friendship.id}) }}"
+              data-action="submit->friendship#submit"
+              data-turbo="false">
+            <input type="hidden" name="_token" value="{{ csrfToken }}">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-xmark me-1"></i>Rechazar
+            </button>
+        </form>
+        <form method="post"
+              action="{{ path('app_friends_block', {userId: targetUser.id}) }}"
+              data-action="submit->friendship#submit"
+              data-confirm="¿Confirmas que quieres bloquear a {{ targetUser.nickname }}? No podrá enviarte solicitudes de amistad."
+              data-turbo="false">
+            <input type="hidden" name="_token" value="{{ csrfToken }}">
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+                <i class="fa-solid fa-ban me-1"></i>Bloquear
+            </button>
+        </form>
+
+    {% endif %}
+
+{% elseif friendship.isAccepted() %}
+
+    {# ── Amigos → eliminar / bloquear ─────────────────────────────────── #}
+    <span class="text-success small fw-semibold">
+        <i class="fa-solid fa-user-check me-1"></i>Amigos
+    </span>
+    <form method="post"
+          action="{{ path('app_friends_unfriend', {id: friendship.id}) }}"
+          data-action="submit->friendship#submit"
+          data-confirm="¿Confirmas que quieres eliminar a {{ targetUser.nickname }} de tus amigos?"
+          data-turbo="false">
+        <input type="hidden" name="_token" value="{{ csrfToken }}">
+        <button type="submit" class="btn btn-outline-secondary btn-sm">
+            <i class="fa-solid fa-user-minus me-1"></i>Eliminar
+        </button>
+    </form>
+    <form method="post"
+          action="{{ path('app_friends_block', {userId: targetUser.id}) }}"
+          data-action="submit->friendship#submit"
+          data-confirm="¿Confirmas que quieres bloquear a {{ targetUser.nickname }}? No podrá enviarte solicitudes de amistad."
+          data-turbo="false">
+        <input type="hidden" name="_token" value="{{ csrfToken }}">
+        <button type="submit" class="btn btn-outline-danger btn-sm">
+            <i class="fa-solid fa-ban me-1"></i>Bloquear
+        </button>
+    </form>
+
+{% elseif friendship.isBlocked() %}
+
+    {% if friendship.requester.id == currentUser.id %}
+
+        {# ── El usuario actual bloqueó al otro → desbloquear ─────────── #}
+        <span class="text-danger small fw-semibold">
+            <i class="fa-solid fa-ban me-1"></i>Bloqueado
+        </span>
+        <form method="post"
+              action="{{ path('app_friends_cancel', {id: friendship.id}) }}"
+              data-action="submit->friendship#submit"
+              data-turbo="false">
+            <input type="hidden" name="_token" value="{{ csrfToken }}">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-lock-open me-1"></i>Desbloquear
+            </button>
+        </form>
+
+    {% else %}
+
+        {# ── El otro usuario bloqueó al actual → sin acciones ─────────── #}
+        <span class="text-muted small">
+            <i class="fa-solid fa-circle-xmark me-1"></i>No disponible
+        </span>
+
+    {% endif %}
+
+{% endif %}
+
+</div>

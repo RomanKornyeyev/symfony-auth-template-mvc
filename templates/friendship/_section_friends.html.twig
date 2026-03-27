@@ -1,0 +1,59 @@
+{#
+  Sección: lista de amigos aceptados.
+  Variables: friendItems (array{friendship, friend}[]), currentUser (User)
+#}
+<h2 class="h5 mb-3">
+    <i class="fa-solid fa-users me-2"></i>Mis amigos
+    {% if friendItems|length > 0 %}
+        <span class="badge text-bg-secondary ms-1">{{ friendItems|length }}</span>
+    {% endif %}
+</h2>
+
+{% if friendItems|length == 0 %}
+    <div class="text-center text-muted py-5">
+        <i class="fa-solid fa-user-group fa-3x mb-3 d-block opacity-25"></i>
+        <p class="mb-0">Aún no tienes amigos. ¡Búscalos arriba!</p>
+    </div>
+{% else %}
+    <div class="row g-3">
+        {% for item in friendItems %}
+            {% set friend     = item.friend %}
+            {% set friendship = item.friendship %}
+            <div class="col-12 col-sm-6 col-lg-4">
+                <div class="card shadow-sm bg-body-tertiary h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <a href="{{ path('app_user_profile', {id: friend.id}) }}" class="flex-shrink-0">
+                            <img src="{{ asset(friend.profilePhoto) }}"
+                                 alt="{{ friend.nickname }}"
+                                 class="rounded-circle border border-2 border-success"
+                                 style="width:56px;height:56px;object-fit:cover;">
+                        </a>
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="fw-semibold text-truncate">
+                                <a href="{{ path('app_user_profile', {id: friend.id}) }}"
+                                   class="text-decoration-none text-body">
+                                    {{ friend.nickname }}
+                                </a>
+                            </div>
+                            <div class="text-muted small text-truncate">{{ friend.name }}</div>
+                            <div class="text-muted small">
+                                <i class="fa-solid fa-user-check me-1 text-success"></i>
+                                Desde {{ friendship.respondedAt|date('d/m/Y') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div id="friendship-actions-{{ friend.id }}"
+                             data-controller="friendship">
+                            {{ include('friendship/_actions_inner.html.twig', {
+                                friendship:  friendship,
+                                targetUser:  friend,
+                                currentUser: currentUser,
+                            }) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

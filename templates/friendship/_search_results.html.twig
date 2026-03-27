@@ -1,0 +1,49 @@
+{#
+  Partial AJAX: resultados de búsqueda de usuarios.
+  Inyectado por user_search_controller.js en el target "results".
+
+  Variables:
+    - results:       User[]
+    - friendshipMap: array<int, Friendship|null>
+    - currentUser:   User
+#}
+{% if results|length == 0 %}
+    <p class="px-3 pb-3 pt-2 text-muted small mb-0">No se encontraron usuarios.</p>
+{% else %}
+    <ul class="list-group list-group-flush">
+        {% for user in results %}
+            <li class="list-group-item bg-body-tertiary px-3 py-2">
+                <div class="d-flex align-items-center gap-3">
+
+                    <a href="{{ path('app_user_profile', {id: user.id}) }}" class="flex-shrink-0">
+                        <img src="{{ asset(user.profilePhoto) }}"
+                             alt="{{ user.nickname }}"
+                             class="rounded-circle border"
+                             style="width:42px;height:42px;object-fit:cover;">
+                    </a>
+
+                    <div class="flex-grow-1 min-w-0">
+                        <div class="fw-semibold text-truncate">
+                            <a href="{{ path('app_user_profile', {id: user.id}) }}"
+                               class="text-decoration-none text-body">
+                                {{ user.nickname }}
+                            </a>
+                        </div>
+                        <div class="text-muted small text-truncate">{{ user.name }}</div>
+                    </div>
+
+                    <div id="friendship-actions-{{ user.id }}"
+                         class="flex-shrink-0"
+                         data-controller="friendship">
+                        {{ include('friendship/_actions_inner.html.twig', {
+                            friendship:  friendshipMap[user.id]|default(null),
+                            targetUser:  user,
+                            currentUser: currentUser,
+                        }) }}
+                    </div>
+
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

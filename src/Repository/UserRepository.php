@@ -16,28 +16,25 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    //    /**
-    //     * @return User[] Returns an array of User objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?User
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Busca usuarios por nickname (parcial), excluyendo al usuario actual
+     * y a los que tengan isSearchable = false.
+     *
+     * @return User[]
+     */
+    public function searchByNickname(string $q, User $exclude, int $limit = 20): array
+    {
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.settings', 's')
+            ->where('u.nickname LIKE :q')
+            ->andWhere('u.id != :exclude')
+            ->andWhere('u.isVerified = true')
+            ->andWhere('s.id IS NULL OR s.isSearchable = true')
+            ->setParameter('q', '%' . $q . '%')
+            ->setParameter('exclude', $exclude->getId())
+            ->orderBy('u.nickname', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

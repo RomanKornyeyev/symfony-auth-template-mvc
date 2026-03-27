@@ -1,0 +1,50 @@
+{#
+  Sección: solicitudes de amistad recibidas pendientes.
+  Variables: pendingRequests (Friendship[]), currentUser (User)
+#}
+{% if pendingRequests|length > 0 %}
+    <h2 class="h5 mb-3">
+        <i class="fa-solid fa-bell text-warning me-2"></i>Solicitudes recibidas
+        <span class="badge text-bg-warning ms-1">{{ pendingRequests|length }}</span>
+    </h2>
+    <div class="row g-3">
+        {% for friendship in pendingRequests %}
+            {% set requester = friendship.requester %}
+            <div class="col-12 col-sm-6 col-lg-4">
+                <div class="card shadow-sm bg-body-tertiary h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <a href="{{ path('app_user_profile', {id: requester.id}) }}" class="flex-shrink-0">
+                            <img src="{{ asset(requester.profilePhoto) }}"
+                                 alt="{{ requester.nickname }}"
+                                 class="rounded-circle border border-2"
+                                 style="width:56px;height:56px;object-fit:cover;">
+                        </a>
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="fw-semibold text-truncate">
+                                <a href="{{ path('app_user_profile', {id: requester.id}) }}"
+                                   class="text-decoration-none text-body">
+                                    {{ requester.nickname }}
+                                </a>
+                            </div>
+                            <div class="text-muted small text-truncate">{{ requester.name }}</div>
+                            <div class="text-muted small">
+                                <i class="fa-regular fa-clock me-1"></i>
+                                {{ friendship.createdAt|date('d/m/Y') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div id="friendship-actions-{{ requester.id }}"
+                             data-controller="friendship">
+                            {{ include('friendship/_actions_inner.html.twig', {
+                                friendship:  friendship,
+                                targetUser:  requester,
+                                currentUser: currentUser,
+                            }) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

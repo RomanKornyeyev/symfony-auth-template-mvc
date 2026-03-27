@@ -35,3 +35,6 @@
 # Media: Ignorar fotos de perfil de usuarios, excepto la imagen por defecto
 /public/media/users/profile_photo/*/
 !/public/media/users/profile_photo/default.jpg
+
+# Misc
+/claude/

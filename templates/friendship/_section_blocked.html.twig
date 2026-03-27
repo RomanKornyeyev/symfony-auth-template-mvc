@@ -1,0 +1,42 @@
+{#
+  Sección: usuarios bloqueados por el usuario actual.
+  Variables: blockedItems (Friendship[]), currentUser (User)
+  Solo se renderiza si hay usuarios bloqueados.
+#}
+{% if blockedItems|length > 0 %}
+    <h2 class="h5 mb-3 mt-4">
+        <i class="fa-solid fa-ban text-danger me-2"></i>Bloqueados
+        <span class="badge text-bg-danger ms-1">{{ blockedItems|length }}</span>
+    </h2>
+    <div class="row g-3">
+        {% for friendship in blockedItems %}
+            {% set blocked = friendship.receiver %}
+            <div class="col-12 col-sm-6 col-lg-4">
+                <div class="card shadow-sm bg-body-tertiary h-100 border-danger border-opacity-25">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <a href="{{ path('app_user_profile', {id: blocked.id}) }}" class="flex-shrink-0">
+                            <img src="{{ asset(blocked.profilePhoto) }}"
+                                 alt="{{ blocked.nickname }}"
+                                 class="rounded-circle border border-2 border-danger opacity-75"
+                                 style="width:56px;height:56px;object-fit:cover;">
+                        </a>
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="fw-semibold text-truncate">{{ blocked.nickname }}</div>
+                            <div class="text-muted small text-truncate">{{ blocked.name }}</div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div id="friendship-actions-{{ blocked.id }}"
+                             data-controller="friendship">
+                            {{ include('friendship/_actions_inner.html.twig', {
+                                friendship:  friendship,
+                                targetUser:  blocked,
+                                currentUser: currentUser,
+                            }) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

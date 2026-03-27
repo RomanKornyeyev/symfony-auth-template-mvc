@@ -2,6 +2,7 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Entity\UserSettings;
 use App\Entity\UserToken;
 use App\Service\MailService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,6 +29,10 @@ class UserService
 
     // Asignar rol por defecto
     $user->setRoles(["ROLE_USER"]);
+
+    // Crear configuración de privacidad por defecto
+    $settings = new UserSettings($user);
+    $user->setSettings($settings);
 
     // Generar un token único
     do {

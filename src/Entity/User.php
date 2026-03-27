@@ -8,8 +8,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Traits\TimestampableEntity;
+use App\Entity\UserSettings;
+use App\Repository\UserRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: "user")]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['email'], message: 'Este email ya está registrado.')]
@@ -61,6 +63,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'boolean')]
     private bool $isVerified = false;
+
+    #[ORM\OneToOne(targetEntity: UserSettings::class, mappedBy: "user", cascade: ["persist", "remove"])]
+    private ?UserSettings $settings = null;
 
     public function getId(): ?int
     {
@@ -173,6 +178,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function hasPendingEmailChange(): bool
     {
         return $this->pendingEmail !== null;
+    }
+
+    public function getSettings(): ?UserSettings
+    {
+        return $this->settings;
+    }
+
+    public function setSettings(UserSettings $settings): self
+    {
+        $this->settings = $settings;
+        return $this;
     }
 
     public function eraseCredentials(): void

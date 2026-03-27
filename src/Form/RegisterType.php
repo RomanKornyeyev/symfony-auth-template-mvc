@@ -19,6 +19,10 @@ class RegisterType extends AbstractType
                 'label' => 'Nombre',
                 'attr' => ['class' => 'form-control'],
             ])
+            ->add('nickname', TextType::class, [
+                'label' => 'Apodo',
+                'attr'  => ['class' => 'form-control'],
+            ])
             ->add('email', EmailType::class, [
                 'label' => 'Correo electrónico',
                 'attr' => ['class' => 'form-control'],

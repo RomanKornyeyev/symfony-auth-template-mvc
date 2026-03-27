@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ targetUser.nickname }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-7">
+
+            <div class="card shadow-sm bg-body-tertiary">
+                <div class="card-body">
+
+                    {# ── Cabecera del perfil ─────────────────────────────── #}
+                    <div class="d-flex align-items-start gap-4 mb-3">
+
+                        <img src="{{ asset(targetUser.profilePhoto) }}"
+                             alt="{{ targetUser.nickname }}"
+                             class="rounded-circle border border-3 border-primary flex-shrink-0"
+                             style="width:96px;height:96px;object-fit:cover;">
+
+                        <div class="flex-grow-1 min-w-0">
+                            <h1 class="h4 mb-0">{{ targetUser.nickname }}</h1>
+                            <p class="text-muted mb-3">{{ targetUser.name }}</p>
+
+                            {# Botones de amistad — Stimulus los actualiza inline #}
+                            <div id="friendship-actions-{{ targetUser.id }}"
+                                 data-controller="friendship">
+                                {{ include('friendship/_actions_inner.html.twig', {
+                                    friendship:  friendship,
+                                    targetUser:  targetUser,
+                                    currentUser: currentUser,
+                                }) }}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {# ── Descripción ─────────────────────────────────────── #}
+                    {% if targetUser.description %}
+                        <hr>
+                        <p class="mb-0 text-secondary">{{ targetUser.description }}</p>
+                    {% endif %}
+
+                </div>
+
+                <div class="card-footer bg-transparent text-muted small d-flex justify-content-between">
+                    <span>
+                        <i class="fa-regular fa-calendar me-1"></i>
+                        Miembro desde {{ targetUser.createdAt|date('d/m/Y') }}
+                    </span>
+                    <a href="{{ path('app_friends_index') }}" class="text-muted text-decoration-none">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Volver
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

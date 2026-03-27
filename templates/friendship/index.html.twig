@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Amigos{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Amigos</h1>
+            <p class="text-muted mb-0">Gestiona tus conexiones y solicitudes de amistad.</p>
+        </div>
+    </div>
+
+    {# ── Buscador live ──────────────────────────────────────────────────────── #}
+    <div class="card shadow-sm bg-body-tertiary mb-4"
+         data-controller="user-search"
+         data-user-search-url-value="{{ path('app_friends_search') }}">
+        <div class="card-body pb-2">
+            <h2 class="h6 text-muted text-uppercase mb-2">
+                <i class="fa-solid fa-magnifying-glass me-1"></i>Buscar usuarios
+            </h2>
+            <input type="text"
+                   class="form-control"
+                   placeholder="Busca por apodo…"
+                   autocomplete="off"
+                   data-user-search-target="input"
+                   data-action="input->user-search#search">
+        </div>
+        {# Resultados como lista pegada al card #}
+        <div data-user-search-target="results"></div>
+    </div>
+
+    {# ── Solicitudes recibidas ──────────────────────────────────────────────── #}
+    <div id="pending-section" class="mb-5">
+        {{ include('friendship/_section_pending.html.twig', {
+            pendingRequests: pendingRequests,
+            currentUser:     currentUser,
+        }) }}
+    </div>
+
+    {# ── Lista de amigos ────────────────────────────────────────────────────── #}
+    <div id="friends-section" class="mb-4">
+        {{ include('friendship/_section_friends.html.twig', {
+            friendItems:  friendItems,
+            currentUser:  currentUser,
+        }) }}
+    </div>
+
+    {# ── Invitaciones enviadas pendientes ───────────────────────────────────── #}
+    <div id="pending-sent-section">
+        {{ include('friendship/_section_pending_sent.html.twig', {
+            pendingSent: pendingSent,
+            currentUser: currentUser,
+        }) }}
+    </div>
+
+    {# ── Bloqueados ─────────────────────────────────────────────────────────── #}
+    <div id="blocked-section">
+        {{ include('friendship/_section_blocked.html.twig', {
+            blockedItems: blockedItems,
+            currentUser:  currentUser,
+        }) }}
+    </div>
+
+</div>
+{% endblock %}
