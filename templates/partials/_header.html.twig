@@ -42,22 +42,30 @@
 
 					<ul class="navbar-nav flex-row flex-wrap ms-md-auto">
 						{% if is_granted('IS_AUTHENTICATED_FULLY') or is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-							{# Si el usuario está autenticado, mostramos su name y un enlace a Logout #}
-							<li class="nav-item">
-								<span class="navbar-text d-inline-block me-3">
-									Hola,
-									<a href="{{ path('app_account_index') }}">
-										{{ app.user.name }}
-									</a>
-								</span>
-							</li>
-							<li class="nav-item col-6 col-lg-auto me-2">
-								<a class="btn btn-outline-secondary btn-sm" href="{{ path('app_friends_index') }}">
-									<i class="fa-solid fa-users me-1"></i>Amigos
-								</a>
-							</li>
-							<li class="nav-item col-6 col-lg-auto">
-								<a class="btn btn-outline-primary" href="{{ path('app_logout') }}">Logout</a>
+							{# Si el usuario está autenticado, mostramos desplegable con avatar y nombre #}
+							<li class="nav-item dropdown">
+								<button class="btn dropdown-toggle d-flex align-items-center gap-2" id="userDropdown" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
+									<img src="{{ asset(app.user.profilePhoto) }}" alt="Avatar" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+									<span>{{ app.user.name }}</span>
+								</button>
+								<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+									<li>
+										<a class="dropdown-item" href="{{ path('app_account_index') }}">
+											<i class="fa-solid fa-gear me-2"></i>Cuenta
+										</a>
+									</li>
+									<li>
+										<a class="dropdown-item" href="{{ path('app_friends_index') }}">
+											<i class="fa-solid fa-users me-2"></i>Amigos
+										</a>
+									</li>
+									<li><hr class="dropdown-divider"></li>
+									<li>
+										<a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
+											<i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+										</a>
+									</li>
+								</ul>
 							</li>
 						{% else %}
 							{# Si no está autenticado, mostramos Login y Registro #}
