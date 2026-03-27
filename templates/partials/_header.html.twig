@@ -42,11 +42,16 @@
 
 					<ul class="navbar-nav flex-row flex-wrap ms-md-auto">
 						{% if is_granted('IS_AUTHENTICATED_FULLY') or is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+							{% set pendingCount = pending_friend_requests_count() %}
 							{# Si el usuario está autenticado, mostramos desplegable con avatar y nombre #}
 							<li class="nav-item dropdown">
-								<button class="btn dropdown-toggle d-flex align-items-center gap-2" id="userDropdown" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
+								<button class="btn dropdown-toggle d-flex align-items-center gap-2 position-relative" id="userDropdown" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
 									<img src="{{ asset(app.user.profilePhoto) }}" alt="Avatar" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
 									<span>{{ app.user.name }}</span>
+									<span data-pending-badge
+										  class="position-absolute top-0 start-100 translate-middle p-1 bg-success border border-2 border-success rounded-circle{% if pendingCount == 0 %} d-none{% endif %}">
+										<span class="visually-hidden">Solicitudes pendientes</span>
+									</span>
 								</button>
 								<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
 									<li>
@@ -55,8 +60,12 @@
 										</a>
 									</li>
 									<li>
-										<a class="dropdown-item" href="{{ path('app_friends_index') }}">
+										<a class="dropdown-item position-relative" href="{{ path('app_friends_index') }}">
 											<i class="fa-solid fa-users me-2"></i>Amigos
+											<span data-pending-badge
+												  class="position-absolute top-50 end-0 translate-middle-y me-2 p-1 bg-success border border-2 border-success rounded-circle{% if pendingCount == 0 %} d-none{% endif %}">
+												<span class="visually-hidden">Solicitudes pendientes</span>
+											</span>
 										</a>
 									</li>
 									<li><hr class="dropdown-divider"></li>

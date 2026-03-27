@@ -57,6 +57,11 @@ export default class extends Controller {
         }
       }
 
+      // Actualiza el indicador de solicitudes pendientes en el header
+      if (data.pendingCount !== undefined) {
+        this.#updatePendingBadge(data.pendingCount);
+      }
+
     } catch {
       // Restauramos el botón para que el usuario pueda reintentar
       if (button) {
@@ -64,6 +69,13 @@ export default class extends Controller {
         button.innerHTML = button.dataset.originalHtml ?? button.innerHTML;
       }
     }
+  }
+
+  // ── Badge de solicitudes pendientes en el header ──────────────────────────
+  #updatePendingBadge(count) {
+    document.querySelectorAll('[data-pending-badge]').forEach(el => {
+      el.classList.toggle('d-none', count === 0);
+    });
   }
 
   // ── Promise-based Bootstrap modal ─────────────────────────────────────────

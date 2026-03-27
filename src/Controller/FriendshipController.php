@@ -237,7 +237,11 @@ class FriendshipController extends AbstractController
             ]),
         ];
 
-        return $this->json(['html' => $html, 'sections' => $sections]);
+        return $this->json([
+            'html'         => $html,
+            'sections'     => $sections,
+            'pendingCount' => count($data['pendingRequests']),
+        ]);
     }
 
     /**
