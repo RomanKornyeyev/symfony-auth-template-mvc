@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Privacidad{% endblock %}
+
+{% block content %}
+	<div class="d-flex justify-content-center align-items-center h-100">
+		<div class="form-wrapper">
+			<h1 class="text-center mb-3">Privacidad</h1>
+			{{ form_start(form, { 'attr': { 'class': 'p-4 p-md-5 border rounded-3 bg-body-tertiary' } }) }}
+
+			<p class="text-muted mb-4">Controla quién puede encontrarte y contactarte en la plataforma.</p>
+
+			<div class="mb-3">
+				<div class="form-check form-switch">
+					{{ form_widget(form.isSearchable, { 'attr': { 'class': 'form-check-input', 'role': 'switch' } }) }}
+					{{ form_label(form.isSearchable, null, { 'label_attr': { 'class': 'form-check-label' } }) }}
+					{{ form_errors(form.isSearchable) }}
+				</div>
+				<div class="form-text text-muted ms-4">
+					Si lo desactivas, no aparecerás en los resultados de búsqueda de otros usuarios.
+				</div>
+			</div>
+
+			<div class="mb-4">
+				<div class="form-check form-switch">
+					{{ form_widget(form.allowFriendRequests, { 'attr': { 'class': 'form-check-input', 'role': 'switch' } }) }}
+					{{ form_label(form.allowFriendRequests, null, { 'label_attr': { 'class': 'form-check-label' } }) }}
+					{{ form_errors(form.allowFriendRequests) }}
+				</div>
+				<div class="form-text text-muted ms-4">
+					Si lo desactivas, nadie podrá enviarte solicitudes de amistad.
+				</div>
+			</div>
+
+			{{ form_rest(form) }}
+
+			<div class="d-flex gap-2">
+				<button type="submit" class="btn btn-primary">Guardar</button>
+				<a href="{{ path('app_account_index') }}" class="btn btn-outline-primary">Cancelar</a>
+			</div>
+
+			{{ form_end(form) }}
+		</div>
+	</div>
+{% endblock %}

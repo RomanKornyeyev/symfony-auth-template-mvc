@@ -15,6 +15,8 @@
 {% if friendship is null or friendship.isRejected() %}
 
     {# ── Sin relación (o solicitud rechazada) → invitar + bloquear ────── #}
+    {% set canRequest = targetUser.settings is null or targetUser.settings.allowFriendRequests %}
+    {% if canRequest %}
     <form method="post"
           action="{{ path('app_friends_send_request', {userId: targetUser.id}) }}"
           data-action="submit->friendship#submit"
@@ -24,6 +26,12 @@
             <i class="fa-solid fa-user-plus me-1"></i>Añadir amigo
         </button>
     </form>
+    {% else %}
+    <span class="btn btn-outline-secondary btn-sm disabled pe-none"
+          title="Este usuario no acepta solicitudes de amistad">
+        <i class="fa-solid fa-user-slash me-1"></i>No acepta solicitudes
+    </span>
+    {% endif %}
     <form method="post"
           action="{{ path('app_friends_block', {userId: targetUser.id}) }}"
           data-action="submit->friendship#submit"

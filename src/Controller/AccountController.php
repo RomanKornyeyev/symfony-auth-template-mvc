@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 // Entities, repositories, forms
 use App\Entity\User;
 use App\Form\ProfileType;
+use App\Form\PrivacyType;
 use App\Form\ChangeEmailType;
 use App\Form\ChangePasswordType;
 
@@ -203,6 +204,33 @@ class AccountController extends AbstractController
         }
 
         return $this->render('account/password.html.twig', [
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/privacidad', name: 'app_account_privacy', methods: ['GET', 'POST'])]
+    public function privacy(Request $request, EntityManagerInterface $em): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('Debes iniciar sesión para acceder a tu cuenta.');
+        }
+
+        $settings = $user->getSettings();
+
+        $form = $this->createForm(PrivacyType::class, $settings, [
+            'csrf_token_id' => 'account_privacy',
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            $this->addFlash('success', 'Ajustes de privacidad actualizados.');
+            return $this->redirectToRoute('app_account_index');
+        }
+
+        return $this->render('account/privacy.html.twig', [
             'form' => $form,
         ]);
     }

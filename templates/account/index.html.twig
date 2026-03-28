@@ -173,6 +173,31 @@
 				</div>
 			</div>
 
+		{# 4) Privacidad #}
+		{% set settings = app.user.settings %}
+		<div class="col-12">
+			<div class="card shadow-sm h-100 bg-body-tertiary">
+				<div class="card-body">
+					<h2 class="h4 mb-3">Privacidad</h2>
+					<ul class="list-unstyled mb-0 small">
+						<li class="mb-2">
+							<span class="text-muted">Visible en búsquedas:</span>
+							<strong>{{ (settings and settings.isSearchable) ? 'Sí' : 'No' }}</strong>
+						</li>
+						<li>
+							<span class="text-muted">Acepta solicitudes de amistad:</span>
+							<strong>{{ (settings and settings.allowFriendRequests) ? 'Sí' : 'No' }}</strong>
+						</li>
+					</ul>
+				</div>
+				<div class="card-footer bg-transparent d-flex justify-content-end">
+					<a class="btn btn-outline-primary" href="{{ path('app_account_privacy') }}">
+						Gestionar privacidad
+					</a>
+				</div>
+			</div>
+		</div>
+
 		</div>
 	</div>
 {% endblock %}
